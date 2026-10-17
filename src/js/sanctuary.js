@@ -8,7 +8,7 @@ import { PetalsSystem } from './petals.js';
 import { soundscape } from './audio.js';
 import { THEMES, applyTheme } from './themes.js';
 
-const STORAGE_KEY = 'aphrodite_sanctuary_complete_v2';
+const STORAGE_KEY = 'aphrodite_sanctuary_v3';
 
 // Initialize Supabase safely using user credentials
 const SUPABASE_URL = "https://pdkcnzijkatvfnqoscyx.supabase.co";
@@ -42,13 +42,9 @@ const DEFAULT_STATE = {
     posture: true,
     intervalSeconds: 90
   },
-  customReminders: [
-    { id: 'cr_1', title: 'Take Evening Magnesium', note: 'Restores muscle recovery & calm nervous system', time: '09:30 PM', icon: '💊', active: true },
-    { id: 'cr_2', title: 'Afternoon Sunlight & Fresh Air', note: '10 minutes of fresh air to reset circadian rhythm', time: '02:00 PM', icon: '☀️', active: true },
-    { id: 'cr_3', title: 'Mindful Green Tea Break', note: 'Unclench jaw and sip without checking phone', time: '04:30 PM', icon: '🍵', active: true }
-  ],
-  waterCups: 4,
-  // Aphrodite chat messages focused on physical wellness, deficiencies, daily praise
+  customReminders: [],
+  waterCups: 0,
+  // Aphrodite chat welcoming greeting
   chatMessages: [
     {
       id: 'msg_1',
@@ -58,60 +54,12 @@ const DEFAULT_STATE = {
       time: 'Just now'
     }
   ],
-  // Sacred Journal with 15 Dramatic Themes
-  journalChapters: [
-    {
-      id: 'chap_1',
-      title: 'A morning by the sea',
-      themeId: 'ocean',
-      mood: 5,
-      date: 'Today, 08:30 AM',
-      content: 'I woke early to watch the turquoise tide wash over the stones. I noticed that when I stop rushing, every moment opens up like a rose.\n\nRenewal is not about forcing growth; it is about softening the soil.'
-    },
-    {
-      id: 'chap_2',
-      title: 'Midnight reflections under stars',
-      themeId: 'lunar',
-      mood: 4,
-      date: 'Yesterday, 11:15 PM',
-      content: 'Sitting in the quiet glow of moonlight. I noticed that when I stop pushing the river, everything begins to find its rightful place.\n\nA missed day is not a verdict. It is marble not yet carved.'
-    },
-    {
-      id: 'chap_3',
-      title: 'Grounding in the deep pine moss',
-      themeId: 'forest',
-      mood: 4,
-      date: '3 days ago',
-      content: 'Spent thirty minutes under ancient trees. The earthy scent of damp pine needles brought me back to my breath.'
-    }
-  ],
-  activeChapterId: 'chap_1',
-  // Planning Calendar Events
-  calendarEvents: [
-    { id: 'ev_1', date: 10, title: '💧 8 Glasses Water', type: 'daily' },
-    { id: 'ev_2', date: 10, title: '🌙 Sleep by 10 PM', type: 'daily' },
-    { id: 'ev_3', date: 12, title: '🍎 Whole Foods Meal Prep', type: 'weekly' },
-    { id: 'ev_4', date: 14, title: '🌿 Nature Walk & Rest', type: 'weekly' },
-    { id: 'ev_5', date: 15, title: '📖 Sacred Reflection', type: 'daily' }
-  ],
-  // Goals To Get Done Dashboard
-  dailyGoals: [
-    { id: 'g_1', title: 'Drink 8 tall glasses of water throughout the day', streak: 6, completed: true, category: 'body' },
-    { id: 'g_2', title: 'No mindless junk food — choose nourishing whole snacks', streak: 4, completed: false, category: 'body' },
-    { id: 'g_3', title: 'Prepare for bed and turn off screens by 10:15 PM', streak: 3, completed: false, category: 'body' },
-    { id: 'g_4', title: 'Roll shoulders back and do 5-min spine alignment stretch', streak: 12, completed: true, category: 'body' }
-  ],
-  weeklyGoals: [
-    { id: 'wg_1', title: 'Hydration Sanctuary (8 cups daily)', current: 5, target: 7 },
-    { id: 'wg_2', title: 'Clean Temple (Mindful eating, zero junk days)', current: 4, target: 5 },
-    { id: 'wg_3', title: 'Early Dusk Rest (In bed before 10:30 PM)', current: 3, target: 4 }
-  ],
-  quests: [
-    { id: 'q_1', title: 'Brew hot chamomile tea instead of having late-night chips', domain: 'body', priority: 'urgent', completed: false },
-    { id: 'q_2', title: 'Unclench jaw, stretch neck gently for 3 minutes', domain: 'body', priority: 'flow', completed: false },
-    { id: 'q_3', title: 'Write 5 lines of gratitude in Sacred Journal', domain: 'spirit', priority: 'flow', completed: true },
-    { id: 'q_4', title: 'Drink two tall glasses of cool water right now', domain: 'body', priority: 'urgent', completed: false }
-  ]
+  journalChapters: [],
+  activeChapterId: null,
+  calendarEvents: [],
+  dailyGoals: [],
+  weeklyGoals: [],
+  quests: []
 };
 
 class MasterSanctuaryApp {
@@ -124,15 +72,23 @@ class MasterSanctuaryApp {
 
   loadState() {
     try {
+      // Clear legacy storage keys with mock data
+      localStorage.removeItem('aphrodite_sanctuary_complete_v2');
+      localStorage.removeItem('aphrodite_sanctuary_complete_v1');
+      localStorage.removeItem('aphrodite_state_v1');
+
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
         return {
           ...DEFAULT_STATE,
           ...parsed,
-          customReminders: parsed.customReminders && parsed.customReminders.length > 0
-            ? parsed.customReminders
-            : DEFAULT_STATE.customReminders
+          customReminders: Array.isArray(parsed.customReminders) ? parsed.customReminders : [],
+          journalChapters: Array.isArray(parsed.journalChapters) ? parsed.journalChapters : [],
+          calendarEvents: Array.isArray(parsed.calendarEvents) ? parsed.calendarEvents : [],
+          dailyGoals: Array.isArray(parsed.dailyGoals) ? parsed.dailyGoals : [],
+          weeklyGoals: Array.isArray(parsed.weeklyGoals) ? parsed.weeklyGoals : [],
+          quests: Array.isArray(parsed.quests) ? parsed.quests : []
         };
       }
     } catch (e) { }
@@ -745,22 +701,46 @@ class MasterSanctuaryApp {
     const titleInput = document.getElementById('active-journal-title');
     if (titleInput) {
       titleInput.addEventListener('input', (e) => {
-        const chap = this.state.journalChapters.find(c => c.id === this.state.activeChapterId);
-        if (chap) {
+        let chap = this.state.journalChapters.find(c => c.id === this.state.activeChapterId);
+        if (!chap) {
+          chap = {
+            id: 'chap_' + Date.now(),
+            title: e.target.value,
+            themeId: this.state.activeTheme || 'sakura',
+            mood: 5,
+            date: 'Today',
+            content: ''
+          };
+          this.state.journalChapters.unshift(chap);
+          this.state.activeChapterId = chap.id;
+        } else {
           chap.title = e.target.value;
-          this.saveState();
         }
+        this.saveState();
+        this.renderJournalListOnly();
       });
     }
 
     const contentInput = document.getElementById('active-journal-content');
     if (contentInput) {
       contentInput.addEventListener('input', (e) => {
-        const chap = this.state.journalChapters.find(c => c.id === this.state.activeChapterId);
-        if (chap) {
+        let chap = this.state.journalChapters.find(c => c.id === this.state.activeChapterId);
+        if (!chap) {
+          chap = {
+            id: 'chap_' + Date.now(),
+            title: (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : 'A moment of reflection',
+            themeId: this.state.activeTheme || 'sakura',
+            mood: 5,
+            date: 'Today',
+            content: e.target.value
+          };
+          this.state.journalChapters.unshift(chap);
+          this.state.activeChapterId = chap.id;
+        } else {
           chap.content = e.target.value;
-          this.saveState();
         }
+        this.saveState();
+        this.renderJournalListOnly();
       });
     }
 
@@ -778,11 +758,23 @@ class MasterSanctuaryApp {
         if (area) {
           const sep = area.value ? '\n\n' : '';
           area.value += `${sep}✨ *Reflection Prompt:* ${p}\n`;
-          const chap = this.state.journalChapters.find(c => c.id === this.state.activeChapterId);
-          if (chap) {
+          let chap = this.state.journalChapters.find(c => c.id === this.state.activeChapterId);
+          if (!chap) {
+            chap = {
+              id: 'chap_' + Date.now(),
+              title: (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : 'A moment of reflection',
+              themeId: this.state.activeTheme || 'sakura',
+              mood: 5,
+              date: 'Today',
+              content: area.value
+            };
+            this.state.journalChapters.unshift(chap);
+            this.state.activeChapterId = chap.id;
+          } else {
             chap.content = area.value;
-            this.saveState();
           }
+          this.saveState();
+          this.renderJournalListOnly();
           soundscape.playChime('chime');
         }
       });
@@ -845,44 +837,15 @@ class MasterSanctuaryApp {
   }
 
   renderJournal() {
-    const listEl = document.getElementById('chapters-list-container');
+    this.renderJournalListOnly();
+
     const activeChap = this.state.journalChapters.find(c => c.id === this.state.activeChapterId) || this.state.journalChapters[0];
-
-    if (listEl) {
-      listEl.innerHTML = this.state.journalChapters.map(chap => {
-        const isActive = chap.id === activeChap?.id;
-        return `
-          <div class="chapter-item-btn ${isActive ? 'active' : ''}" data-chap-id="${chap.id}">
-            <h4>${chap.title || 'Untitled'}</h4>
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
-              <p>${chap.date}</p>
-              <span style="font-size: 9px; text-transform: uppercase; color: var(--primary); font-weight: 600;">
-                ${chap.themeId}
-              </span>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      listEl.querySelectorAll('.chapter-item-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.chapId;
-          this.state.activeChapterId = id;
-          const chosen = this.state.journalChapters.find(c => c.id === id);
-          if (chosen && chosen.themeId) {
-            this.switchTheme(chosen.themeId);
-          }
-          this.saveState();
-          this.renderJournal();
-        });
-      });
-    }
 
     // Update active editor inputs
     const titleInput = document.getElementById('active-journal-title');
     const contentInput = document.getElementById('active-journal-content');
-    if (titleInput && activeChap) titleInput.value = activeChap.title;
-    if (contentInput && activeChap) contentInput.value = activeChap.content;
+    if (titleInput) titleInput.value = activeChap ? activeChap.title : '';
+    if (contentInput) contentInput.value = activeChap ? activeChap.content : '';
 
     // Render 15 Theme Swatches in Journal Toolbar
     const galleryEl = document.getElementById('journal-themes-swatches');
@@ -906,11 +869,55 @@ class MasterSanctuaryApp {
     }
   }
 
+  renderJournalListOnly() {
+    const listEl = document.getElementById('chapters-list-container');
+    const activeChap = this.state.journalChapters.find(c => c.id === this.state.activeChapterId) || this.state.journalChapters[0];
+
+    if (listEl) {
+      if (!this.state.journalChapters || this.state.journalChapters.length === 0) {
+        listEl.innerHTML = `
+          <div style="padding: 24px 12px; text-align: center; color: var(--muted-foreground); font-size: 12px; border: 1px dashed var(--border); border-radius: 4px; background: var(--muted); margin: 6px 0;">
+            No chapters yet 📖<br>
+            <span style="font-size: 11px; opacity: 0.85;">Tap "+ New Chapter" above to begin your reflections.</span>
+          </div>
+        `;
+      } else {
+        listEl.innerHTML = this.state.journalChapters.map(chap => {
+          const isActive = chap.id === activeChap?.id;
+          return `
+            <div class="chapter-item-btn ${isActive ? 'active' : ''}" data-chap-id="${chap.id}">
+              <h4>${this.escapeHtml(chap.title) || 'Untitled'}</h4>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
+                <p>${chap.date}</p>
+                <span style="font-size: 9px; text-transform: uppercase; color: var(--primary); font-weight: 600;">
+                  ${chap.themeId}
+                </span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        listEl.querySelectorAll('.chapter-item-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.chapId;
+            this.state.activeChapterId = id;
+            const chosen = this.state.journalChapters.find(c => c.id === id);
+            if (chosen && chosen.themeId) {
+              this.switchTheme(chosen.themeId);
+            }
+            this.saveState();
+            this.renderJournal();
+          });
+        });
+      }
+    }
+  }
+
   // =========================================================================
   // PLANNING CALENDAR & EVENT SCHEDULER (GRID & AGENDA HORIZONS)
   // =========================================================================
   initCalendar() {
-    this.currentCalendarDate = new Date(2026, 9, 1); // October 2026 base
+    this.currentCalendarDate = new Date();
 
     // View switcher (Grid vs Agenda)
     const gridBtn = document.getElementById('btn-view-grid');
@@ -964,8 +971,9 @@ class MasterSanctuaryApp {
         const title = prompt('Enter Self-Care Event or Goal (e.g. 💧 Drink 8 cups, 🌙 Sleep at 10pm):');
         if (title && title.trim()) {
           const daysInMonth = new Date(this.currentCalendarDate.getFullYear(), this.currentCalendarDate.getMonth() + 1, 0).getDate();
-          const day = prompt(`Enter Day of the Month (1 to ${daysInMonth}):`, '10');
-          const dayNum = parseInt(day) || 10;
+          const todayNum = new Date().getDate();
+          const day = prompt(`Enter Day of the Month (1 to ${daysInMonth}):`, String(todayNum));
+          const dayNum = parseInt(day) || todayNum;
           this.state.calendarEvents.push({
             id: 'ev_' + Date.now(),
             date: dayNum,
@@ -987,6 +995,7 @@ class MasterSanctuaryApp {
     const year = this.currentCalendarDate.getFullYear();
     const month = this.currentCalendarDate.getMonth();
     const monthName = this.currentCalendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const todayObj = new Date();
 
     // Update month title
     const monthDisplay = document.getElementById('calendar-month-display');
@@ -1007,13 +1016,13 @@ class MasterSanctuaryApp {
       }
 
       for (let day = 1; day <= daysInMonth; day++) {
-        const isToday = (year === 2026 && month === 9 && day === 10);
+        const isToday = (year === todayObj.getFullYear() && month === todayObj.getMonth() && day === todayObj.getDate());
         const events = this.state.calendarEvents.filter(e => e.date === day);
 
         html += `
           <td class="${isToday ? 'today' : ''}" data-day="${day}">
             <div class="day-number">${day} ${isToday ? '• Today' : ''}</div>
-            ${events.map(ev => `<span class="calendar-event-tag">${this.escapeHtml(ev.title)}</span>`).join('')}
+            ${events.map(ev => `<span class="calendar-event-tag" data-ev-id="${ev.id}">${this.escapeHtml(ev.title)}</span>`).join('')}
           </td>
         `;
         col++;
@@ -1034,7 +1043,18 @@ class MasterSanctuaryApp {
 
       // Click on day cell to schedule quick event
       tableBody.querySelectorAll('td[data-day]').forEach(cell => {
-        cell.addEventListener('click', () => {
+        cell.addEventListener('click', (e) => {
+          if (e.target.closest('.calendar-event-tag')) {
+            const evId = e.target.closest('.calendar-event-tag').dataset.evId;
+            const idx = this.state.calendarEvents.findIndex(ev => ev.id === evId);
+            if (idx !== -1 && confirm(`Remove event "${this.state.calendarEvents[idx].title}"?`)) {
+              this.state.calendarEvents.splice(idx, 1);
+              this.saveState();
+              this.renderCalendar();
+              this.toast('Event removed from calendar.');
+            }
+            return;
+          }
           const d = cell.dataset.day;
           const task = prompt(`Add a self-care goal for Day ${d}:`);
           if (task && task.trim()) {
@@ -1062,11 +1082,11 @@ class MasterSanctuaryApp {
 
       for (let day = 1; day <= daysInMonth; day++) {
         const events = this.state.calendarEvents.filter(e => e.date === day);
-        const isToday = (year === 2026 && month === 9 && day === 10);
+        const isToday = (year === todayObj.getFullYear() && month === todayObj.getMonth() && day === todayObj.getDate());
         const dayDate = new Date(year, month, day);
         const dayOfWeek = dayNames[dayDate.getDay()];
 
-        if (events.length > 0 || isToday || (day >= 10 && day <= 17)) {
+        if (events.length > 0 || isToday) {
           scheduledCount++;
           agendaHtml += `
             <div class="agenda-day-card ${isToday ? 'today' : ''}" data-day="${day}">
@@ -1079,7 +1099,7 @@ class MasterSanctuaryApp {
                   <h4 style="font-size: 14.5px; font-weight: 600; color: var(--foreground);">${monthName} ${day} ${isToday ? '• Today' : ''}</h4>
                   <div class="agenda-events-list" style="margin-top: 6px;">
                     ${events.length > 0
-                      ? events.map(ev => `<span class="agenda-event-chip">${this.escapeHtml(ev.title)}</span>`).join('')
+                      ? events.map(ev => `<span class="agenda-event-chip" data-ev-id="${ev.id}">${this.escapeHtml(ev.title)} <small class="del-agenda-ev" data-id="${ev.id}" style="cursor: pointer; opacity: 0.7; margin-left: 6px;" title="Delete event">✕</small></span>`).join('')
                       : '<span class="agenda-empty-events">A quiet, open horizon.</span>'
                     }
                   </div>
@@ -1118,6 +1138,20 @@ class MasterSanctuaryApp {
           }
         });
       });
+
+      agendaView.querySelectorAll('.del-agenda-ev').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const evId = btn.dataset.id;
+          const idx = this.state.calendarEvents.findIndex(ev => ev.id === evId);
+          if (idx !== -1) {
+            const removed = this.state.calendarEvents.splice(idx, 1)[0];
+            this.saveState();
+            this.renderCalendar();
+            this.toast(`Removed event: "${removed.title}"`);
+          }
+        });
+      });
     }
   }
 
@@ -1143,6 +1177,27 @@ class MasterSanctuaryApp {
           this.renderGoals();
           soundscape.playChime('chime');
           this.toast('New daily goal placed on your horizon! 🌿');
+        }
+      });
+    }
+
+    const addWeeklyTargetBtn = document.getElementById('btn-add-weekly-target');
+    if (addWeeklyTargetBtn) {
+      addWeeklyTargetBtn.addEventListener('click', () => {
+        const text = prompt('Enter Weekly Target (e.g. 💧 Daily Hydration, 🌙 Early Dusk Rest):');
+        if (text && text.trim()) {
+          const days = prompt('Enter target days per week (1 - 7):', '5');
+          const targetNum = Math.min(7, Math.max(1, parseInt(days) || 5));
+          this.state.weeklyGoals.push({
+            id: 'wg_' + Date.now(),
+            title: text.trim(),
+            current: 0,
+            target: targetNum
+          });
+          this.saveState();
+          this.renderGoals();
+          soundscape.playChime('chime');
+          this.toast('Weekly target added to your sanctuary horizon! 🌸');
         }
       });
     }
@@ -1212,7 +1267,10 @@ class MasterSanctuaryApp {
               </div>
               <span style="font-size: 13.5px; font-weight: 500;">${this.escapeHtml(goal.title)}</span>
             </div>
-            <span style="font-size: 11.5px; color: var(--primary); font-weight: 600;">🔥 ${goal.streak}d</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 11.5px; color: var(--primary); font-weight: 600;">🔥 ${goal.streak}d</span>
+              <button class="del-goal-btn" data-goal-id="${goal.id}" title="Delete habit" style="background: none; border: none; cursor: pointer; opacity: 0.6; font-size: 11px; padding: 2px 4px; color: var(--muted-foreground);">✕</button>
+            </div>
           </div>
         `).join('');
 
@@ -1234,44 +1292,83 @@ class MasterSanctuaryApp {
             }
           });
         });
+
+        dailyContainer.querySelectorAll('.del-goal-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = btn.dataset.goalId;
+            const idx = this.state.dailyGoals.findIndex(item => item.id === id);
+            if (idx !== -1) {
+              const removed = this.state.dailyGoals.splice(idx, 1)[0];
+              this.saveState();
+              this.renderGoals();
+              this.toast(`Removed daily habit: "${removed.title}"`);
+            }
+          });
+        });
       }
     }
 
     // 2. Weekly Targets
     const weeklyContainer = document.getElementById('weekly-targets-container');
     if (weeklyContainer) {
-      weeklyContainer.innerHTML = this.state.weeklyGoals.map(wg => {
-        const percent = Math.min(100, Math.round((wg.current / wg.target) * 100));
-        return `
-          <div style="border: 1px solid var(--border); padding: 12px; border-radius: 4px; background: var(--muted); margin-bottom: 10px;">
-            <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600;">
-              <span>${this.escapeHtml(wg.title)}</span>
-              <span style="color: var(--primary);">${wg.current} / ${wg.target} days</span>
-            </div>
-            <div class="progress-track-bar">
-              <div class="progress-fill-bar" style="width: ${percent}%;"></div>
-            </div>
-            <button class="tool-btn-inc" data-wg-id="${wg.id}" style="margin-top: 6px; font-size: 11px; color: var(--primary); cursor: pointer;">
-              + Log Progress Today
-            </button>
+      if (!this.state.weeklyGoals || this.state.weeklyGoals.length === 0) {
+        weeklyContainer.innerHTML = `
+          <div style="padding: 16px; text-align: center; color: var(--muted-foreground); font-size: 12px; font-style: italic; border: 1px dashed var(--border); border-radius: 4px;">
+            No weekly targets active yet 🌙 Tap "+ Add Target" above to pace your week.
           </div>
         `;
-      }).join('');
+      } else {
+        weeklyContainer.innerHTML = this.state.weeklyGoals.map(wg => {
+          const percent = Math.min(100, Math.round((wg.current / wg.target) * 100));
+          return `
+            <div style="border: 1px solid var(--border); padding: 12px; border-radius: 4px; background: var(--muted); margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600;">
+                <span>${this.escapeHtml(wg.title)}</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="color: var(--primary);">${wg.current} / ${wg.target} days</span>
+                  <button class="del-wg-btn" data-wg-id="${wg.id}" title="Delete target" style="background: none; border: none; cursor: pointer; opacity: 0.6; font-size: 11px; padding: 2px 4px; color: var(--muted-foreground);">✕</button>
+                </div>
+              </div>
+              <div class="progress-track-bar">
+                <div class="progress-fill-bar" style="width: ${percent}%;"></div>
+              </div>
+              <button class="tool-btn-inc" data-wg-id="${wg.id}" style="margin-top: 6px; font-size: 11px; color: var(--primary); cursor: pointer;">
+                + Log Progress Today
+              </button>
+            </div>
+          `;
+        }).join('');
 
-      weeklyContainer.querySelectorAll('.tool-btn-inc').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.wgId;
-          const wg = this.state.weeklyGoals.find(w => w.id === id);
-          if (wg) {
-            wg.current = Math.min(wg.target, wg.current + 1);
-            this.saveState();
-            this.renderGoals();
-            soundscape.playChime('bell');
-            if (this.petals) this.petals.celebrate();
-            this.toast(`Progress recorded for ${wg.title}! 🌸`);
-          }
+        weeklyContainer.querySelectorAll('.tool-btn-inc').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.wgId;
+            const wg = this.state.weeklyGoals.find(w => w.id === id);
+            if (wg) {
+              wg.current = Math.min(wg.target, wg.current + 1);
+              this.saveState();
+              this.renderGoals();
+              soundscape.playChime('bell');
+              if (this.petals) this.petals.celebrate();
+              this.toast(`Progress recorded for ${wg.title}! 🌸`);
+            }
+          });
         });
-      });
+
+        weeklyContainer.querySelectorAll('.del-wg-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = btn.dataset.wgId;
+            const idx = this.state.weeklyGoals.findIndex(w => w.id === id);
+            if (idx !== -1) {
+              const removed = this.state.weeklyGoals.splice(idx, 1)[0];
+              this.saveState();
+              this.renderGoals();
+              this.toast(`Removed target: "${removed.title}"`);
+            }
+          });
+        });
+      }
     }
 
     // 3. Quests Board (Filtered)
@@ -1298,9 +1395,12 @@ class MasterSanctuaryApp {
               </div>
               <span style="font-size: 13px;">${this.escapeHtml(q.title)}</span>
             </div>
-            <span style="font-size: 10px; padding: 2px 7px; border-radius: 3px; background: var(--secondary); color: var(--primary); text-transform: uppercase;">
-              ${q.priority || 'flow'}
-            </span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 10px; padding: 2px 7px; border-radius: 3px; background: var(--secondary); color: var(--primary); text-transform: uppercase;">
+                ${q.priority || 'flow'}
+              </span>
+              <button class="del-quest-btn" data-qid="${q.id}" title="Delete quest" style="background: none; border: none; cursor: pointer; opacity: 0.6; font-size: 11px; padding: 2px 4px; color: var(--muted-foreground);">✕</button>
+            </div>
           </div>
         `).join('');
 
@@ -1317,6 +1417,20 @@ class MasterSanctuaryApp {
                 if (this.petals) this.petals.celebrate();
                 this.toast(`Quest completed: "${q.title}"! 🕊️`);
               }
+            }
+          });
+        });
+
+        questContainer.querySelectorAll('.del-quest-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = btn.dataset.qid;
+            const idx = this.state.quests.findIndex(item => item.id === id);
+            if (idx !== -1) {
+              const removed = this.state.quests.splice(idx, 1)[0];
+              this.saveState();
+              this.renderGoals();
+              this.toast(`Removed quest: "${removed.title}"`);
             }
           });
         });
