@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="sakura">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Aphrodite — Your Personal Sanctuary & Self-Care</title>
+  <meta name="description"
+    content="A self-care and reflection sanctuary with 15 dramatic themes, planning calendar, gentle goals, physical wellness companion, and reminders." />
+  <link rel="icon" type="image/png" href="/assets/aphrodite_avatar.png" />
+
+  <!-- Google Fonts: Cormorant Garamond & Karla -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Karla:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="/src/styles/sanctuary.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+
+</head>
+
+<body>
+
+  <!-- Floating Falling Cherry Blossom Petals Canvas -->
+  <canvas id="petals-canvas" aria-hidden="true"></canvas>
+
+  <div class="page-shell">
+
+    <!-- Site Header -->
+    <header class="site-header">
+      <a href="#sanctuary" class="wordmark" aria-label="Aphrodite home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="brand-icon"
+          aria-hidden="true">
+          <path
+            d="M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1M9 8a3 3 0 1 0 3 3M9 8h1m5 0a3 3 0 1 1-3 3m3-3h-1m-2 3v-1">
+          </path>
+          <circle cx="12" cy="8" r="2"></circle>
+          <path d="M12 10v12"></path>
+          <path d="M12 22c4.2 0 7-1.667 7-5-4.2 0-7 1.667-7 5Z"></path>
+          <path d="M12 22c-4.2 0-7-1.667-7-5 4.2 0 7 1.667 7 5Z"></path>
+        </svg>
+        <div>
+          <div class="wordmark-name">aphrodite<span class="text-primary">.</span></div>
+          <div class="brand-caption">a little space for you</div>
+        </div>
+      </a>
+
+      <nav class="navigation" aria-label="Main navigation">
+        <a href="#sanctuary" class="active">Sanctuary</a>
+        <a href="#aphrodite-chat">Talk to Aphrodite</a>
+        <a href="#journal">Sacred Journal</a>
+        <a href="#calendar">Planning Calendar</a>
+        <a href="#goals">Goals to Get Done</a>
+        <a href="#reminders">Reminders</a>
+        <a href="#breath">Breath & Sound</a>
+      </nav>
+
+      <div class="header-actions">
+        <!-- 15 Themes Quick Selector Dropdown -->
+        <select class="theme-pill-dropdown" id="header-theme-selector" title="Switch between 15 dramatic themes"
+          aria-label="Theme selector">
+          <option value="sakura">🌸 Sakura (Blush)</option>
+          <option value="lunar">🌙 Lunar (Night Violet)</option>
+          <option value="ocean">🌊 Ocean (Aquamarine)</option>
+          <option value="forest">🌲 Forest (Pine Moss)</option>
+          <option value="golden">☀️ Golden (Amber Sunset)</option>
+          <option value="rainy">🌧️ Rainy (Slate Petrichor)</option>
+          <option value="nebula">✨ Nebula (Cosmic Purple)</option>
+          <option value="zen">🎋 Zen (Sand & Pebble)</option>
+          <option value="oasis">🏜️ Oasis (Terracotta & Teal)</option>
+          <option value="academia">📜 Academia (Mahogany Gold)</option>
+          <option value="cloud">☁️ Cloud (Dawn Lavender)</option>
+          <option value="hearth">🔥 Hearth (Cinnamon Ember)</option>
+          <option value="green">🌿 Green (Fern Botanical)</option>
+          <option value="aurora">🌌 Aurora (Neon Emerald)</option>
+          <option value="glass">💎 Glass (Frosted Mono)</option>
+        </select>
+
+        <!-- Ambient sound synthesizer button -->
+        <button class="icon-button" id="btn-header-sound" title="Play 528Hz Zen Bowl" aria-label="Play ambient sound">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+        </button>
+
+        <!-- Trigger Popup Nudge -->
+        <button class="icon-button" id="btn-quiet-mode" title="Trigger gentle reminder popup"
+          aria-label="Trigger reminder">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.268 21a2 2 0 0 0 3.464 0"></path>
+            <path
+              d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326">
+            </path>
+          </svg>
+        </button>
+
+        <!-- Mobile Navigation Menu Toggle -->
+        <button class="icon-button mobile-menu-toggle" id="btn-mobile-menu" title="Navigation Menu" aria-label="Toggle navigation menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN SANCTUARY VIEWPORT -->
+    <main>
+
+      <!-- HERO SECTION -->
+      <section class="hero" id="sanctuary">
+        <img class="hero-image" src="/assets/aphrodite-hero.png"
+          alt="Full-figure Aphrodite standing on a shell beneath rose-covered arch overlooking the sea" width="928"
+          height="1152" />
+
+        <div class="hero-copy">
+          <div class="eyebrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1M9 8a3 3 0 1 0 3 3M9 8h1m5 0a3 3 0 1 1-3 3m3-3h-1m-2 3v-1">
+              </path>
+              <circle cx="12" cy="8" r="2"></circle>
+              <path d="M12 10v12"></path>
+              <path d="M12 22c4.2 0 7-1.667 7-5-4.2 0-7 1.667-7 5Z"></path>
+              <path d="M12 22c-4.2 0-7-1.667-7-5 4.2 0 7 1.667 7 5Z"></path>
+            </svg>
+            The art of coming back to yourself
+          </div>
+
+          <h1>Your own<br />little <em>sanctuary.</em></h1>
+          <p class="hero-description">A softer pace. A deeper breath.<br />A beautiful space to overcome bodily fatigue,
+            reflect in 15 themes, and bloom.</p>
+
+          <a href="#aphrodite-chat" class="rose-button hero-cta">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z">
+              </path>
+              <path d="M16 8 2 22"></path>
+              <path d="M17.5 15H9"></path>
+            </svg>
+            Talk to Aphrodite about my day
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 7h10v10"></path>
+              <path d="M7 17 17 7"></path>
+            </svg>
+          </a>
+
+          <div class="hero-footnote">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5">
+              </path>
+            </svg>
+            Inspired by Aphrodite. Rooted in you.
+          </div>
+        </div>
+
+        <span class="hero-side">a season of becoming — no. 01</span>
+        <span class="hero-caption">Aphrodite · in full bloom</span>
+      </section>
+
+      <!-- WELCOME STRIP -->
+      <div class="welcome-strip">
+        <p>A little more presence. <em>A little more you.</em></p>
+        <span class="date-label">October 10, 2026</span>
+      </div>
+
+      <!-- INSPIRATION SECTION -->
+      <section class="section" id="inspiration">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Gathered with intention</div>
+            <h2>Little things, lovely things.</h2>
+          </div>
+          <a href="#aphrodite-chat"
+            style="color: var(--muted-foreground); display: flex; align-items: center; gap: 8px; font-size: 11.5px;">
+            Open Guidance
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+
+        <div class="sanctuary-grid">
+
+          <!-- 1. Visual Card (Bird Among Cherry Blossoms) -->
+          <article class="inspiration">
+            <img src="/assets/cherry-blossoms.jpg" width="1024" height="1024" loading="lazy"
+              alt="A small songbird among delicate cherry blossom branches" />
+            <button class="save-image" id="btn-save-inspiration" title="Save inspiration" aria-label="Save inspiration"
+              aria-pressed="false">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z">
+                </path>
+              </svg>
+            </button>
+            <div class="inspiration-content">
+              <div class="eyebrow">A moment of wonder</div>
+              <h3>The beauty of beginning.</h3>
+              <p>Even the smallest bloom is a becoming.</p>
+            </div>
+          </article>
+
+          <!-- 2. Quote Panel -->
+          <article class="quote-panel">
+            <span class="eyebrow">Words to carry with you</span>
+            <blockquote id="daily-quote-text">“You are allowed to be both a masterpiece and a work in progress.”
+            </blockquote>
+            <span class="attribution" id="daily-quote-author">A gentle reminder</span>
+            <button class="quote-action" id="btn-next-quote" title="Another gentle reminder"
+              aria-label="Another gentle reminder" style="color: var(--primary); margin-top: 14px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </button>
+          </article>
+
+          <!-- 3. Mood Panel -->
+          <article class="mood-panel">
+            <span class="eyebrow">A gentle check-in</span>
+            <h3>How is your heart?</h3>
+            <p>No right answer. Just a moment to listen.</p>
+
+            <div class="mood-options">
+              <div class="mood-option">
+                <button data-mood="radiant" aria-label="Radiant" title="Radiant" aria-pressed="false">☀️</button>
+                <span>Radiant</span>
+              </div>
+              <div class="mood-option">
+                <button data-mood="peaceful" aria-label="Peaceful" title="Peaceful" aria-pressed="true">🍃</button>
+                <span>Peaceful</span>
+              </div>
+              <div class="mood-option">
+                <button data-mood="reflective" aria-label="Reflective" title="Reflective"
+                  aria-pressed="false">⛅</button>
+                <span>Reflective</span>
+              </div>
+              <div class="mood-option">
+                <button data-mood="tender" aria-label="Tender" title="Tender" aria-pressed="false">☁️</button>
+                <span>Tender</span>
+              </div>
+            </div>
+
+            <div class="mood-response" aria-live="polite">
+              <span>Rest in this sacred stillness. You have arrived. 🌿</span>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 2: TALK TO APHRODITE (PHYSICAL DEFICIENCIES & PRAISE) -->
+      <!-- ============================================================= -->
+      <section class="section" id="aphrodite-chat">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Physical Care & Empathetic Companion</div>
+            <h2>Talk to Aphrodite.</h2>
+          </div>
+          <span style="font-size: 12px; color: var(--muted-foreground);">
+            Non-judgmental guidance for your body & fatigue
+          </span>
+        </div>
+
+        <div class="aphrodite-chat-container">
+
+          <!-- Left Panel: Profile & Physical Deficiencies Topics -->
+          <div class="aphrodite-profile-card">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <img src="/assets/aphrodite_avatar.png" alt="Aphrodite" class="aphrodite-avatar-large" />
+              <div>
+                <h3 style="font-size: 24px; color: var(--foreground);">Aphrodite</h3>
+                <p style="font-size: 11.5px; color: var(--muted-foreground);">Your gentle physical companion</p>
+                <span style="font-size: 10px; color: #10B981; font-weight: 600;">● Always listening</span>
+              </div>
+            </div>
+
+            <div>
+              <span class="eyebrow" style="margin-bottom: 8px;">Tap your physical deficiency:</span>
+              <div class="aphrodite-deficiencies-list">
+                <button class="deficiency-chip-btn"
+                  data-prompt="I forgot to drink water today and my body feels dry and parched.">
+                  <span>💧</span> Dehydrated / Forgot Water
+                </button>
+                <button class="deficiency-chip-btn"
+                  data-prompt="I've been eating mindless junk food and sugar, and I feel bloated and sluggish.">
+                  <span>🍕</span> Ate Junk Food & Heavy
+                </button>
+                <button class="deficiency-chip-btn"
+                  data-prompt="My neck and posture are completely stiff from hunching over screens all day.">
+                  <span>🧘</span> Stiff Neck & Poor Posture
+                </button>
+                <button class="deficiency-chip-btn"
+                  data-prompt="I kept staying up past midnight and my eyes and brain are completely exhausted.">
+                  <span>🌙</span> Sleep Deprived / Late Night
+                </button>
+                <button class="deficiency-chip-btn"
+                  data-prompt="I had a very tiring day and feel like I didn't get enough done. Did I do enough?">
+                  <span>🌸</span> Tired Day & Seeking Praise
+                </button>
+              </div>
+            </div>
+
+            <div
+              style="border-top: 1px solid var(--border); padding-top: 14px; font-size: 11.5px; color: var(--muted-foreground); font-style: italic;">
+              "A missed day is not a verdict. It is marble not yet carved. Tell me what your body needs."
+            </div>
+          </div>
+
+          <!-- Right Panel: Conversation Stream with Micro-Action Parser -->
+          <div class="chat-dialog-area">
+            <div class="chat-stream-scroll" id="chat-messages-container">
+              <!-- Rendered via JS -->
+            </div>
+
+            <div class="chat-input-bar">
+              <input type="text" class="chat-input-field" id="chat-input"
+                placeholder="Tell Aphrodite about your body, fatigue, or how your day went..." autocomplete="off" />
+              <button class="icon-button" id="btn-chat-mic" title="Voice dictation" aria-label="Microphone">
+                🎙️
+              </button>
+              <button class="rose-button" id="btn-send-chat" style="padding: 0 18px; height: 38px;">
+                Send
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 3: SACRED JOURNAL WITH 15 DRAMATIC THEMES -->
+      <!-- ============================================================= -->
+      <section class="section" id="journal">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Personal Journal & Chapters</div>
+            <h2>Sacred Journal (15 Themes).</h2>
+          </div>
+          <button class="outlined-button" id="btn-new-chapter">
+            <span>+</span> New Chapter
+          </button>
+        </div>
+
+        <div class="journal-section-grid">
+
+          <!-- Left: Chapters Sidebar -->
+          <div class="journal-chapters-sidebar">
+            <span class="eyebrow">Chapters Archive</span>
+            <div class="chapters-scroll-list" id="chapters-list-container">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Right: Active Chapter Editor -->
+          <div class="journal-active-editor">
+
+            <div class="journal-title-box">
+              <input type="text" class="journal-title-input" id="active-journal-title" value="A morning by the sea"
+                placeholder="Chapter Title..." />
+              <button class="outlined-button" id="btn-journal-inspire" style="height: 32px; font-size: 11px;">
+                ✨ Inspire Me
+              </button>
+            </div>
+
+            <!-- 15 Dramatic Themes Palette Swatches -->
+            <div>
+              <span class="eyebrow" style="margin-bottom: 6px;">Pick Chapter Theme (Transforms entire app):</span>
+              <div class="themes-gallery-grid" id="journal-themes-swatches">
+                <!-- 15 Theme swatches injected via JS -->
+              </div>
+            </div>
+
+            <textarea class="journal-body-textarea" id="active-journal-content"
+              placeholder="Pour your honest reflections here. Notice how the atmosphere responds..."></textarea>
+
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; font-size: 11.5px; color: var(--muted-foreground);">
+              <span>🌿 Preserved securely in your offline sanctuary</span>
+              <span style="color: var(--primary); font-weight: 500;">Autosaved to device</span>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 4: PLANNING CALENDAR & EVENT SCHEDULER -->
+      <!-- ============================================================= -->
+      <section class="section" id="calendar">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Schedule Daily & Weekly Horizons</div>
+            <h2>Event Planning Calendar.</h2>
+          </div>
+          <button class="rose-button" id="btn-add-calendar-event">
+            <span>+</span> Schedule Goal
+          </button>
+        </div>
+
+        <div class="calendar-wrapper-card">
+          <div class="calendar-header-bar">
+            <div class="calendar-month-title">October 2026</div>
+            <div style="font-size: 12px; color: var(--muted-foreground);">
+              Click on any day cell to schedule a daily habit or weekly goal
+            </div>
+          </div>
+
+          <table class="calendar-grid-table">
+            <thead>
+              <tr>
+                <th>Sun</th>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+              </tr>
+            </thead>
+            <tbody id="calendar-grid-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 5: GOALS TO GET DONE DASHBOARD -->
+      <!-- ============================================================= -->
+      <section class="section" id="goals">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Daily Micro-Habits & Milestones</div>
+            <h2>Goals to Get Done.</h2>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="outlined-button" id="btn-add-daily-goal">+ Add Daily Goal</button>
+            <button class="rose-button" id="btn-add-quest-item">+ Add Quest</button>
+          </div>
+        </div>
+
+        <div class="goals-dashboard-grid">
+
+          <!-- Left: Daily Micro-Habits & Weekly Progress -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="goals-panel-box">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <h3>🌿 Daily Micro-Habits</h3>
+                <span class="eyebrow">1-Day Grace Active</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;" id="daily-goals-container">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+
+            <div class="goals-panel-box">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <h3>🌙 Weekly Targets</h3>
+                <span class="eyebrow">Paced Steady</span>
+              </div>
+              <div id="weekly-targets-container">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Active Quests Board -->
+          <div class="goals-panel-box">
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+              <h3>🗺️ Active Quests Board</h3>
+              <span class="eyebrow">Body · Mind · Spirit</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;" id="quests-board-container">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================= -->
+      <!-- SECTION 6: POPUP NOTIFICATIONS & GENTLE REMINDERS -->
+      <!-- ============================================================= -->
+      <section class="section" id="reminders">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Gentle Activity Nudges</div>
+            <h2>Popup Notifications & Reminders.</h2>
+          </div>
+          <button class="rose-button" id="btn-test-nudge-popup">
+            🔔 Preview Reminder Popup Now
+          </button>
+        </div>
+
+        <div class="reminders-grid">
+
+          <div class="reminder-card">
+            <h3>🕊️ Activity Reminder Toggles</h3>
+            <p>Periodic gentle popup toasts while you use your sanctuary.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+
+              <!-- 1. Water -->
+              <div class="reminder-item-row">
+                <div class="reminder-info">
+                  <h4>💧 Remember to drink water</h4>
+                  <p>A gentle cool sip restores your bloom.</p>
+                </div>
+                <label class="toggle-switch-ios">
+                  <input type="checkbox" id="toggle-remind-water" checked>
+                  <span class="toggle-slider-round"></span>
+                </label>
+              </div>
+
+              <!-- 2. Sleep -->
+              <div class="reminder-item-row">
+                <div class="reminder-info">
+                  <h4>🌙 Go to bed early</h4>
+                  <p>Give your temple deep restorative rest tonight.</p>
+                </div>
+                <label class="toggle-switch-ios">
+                  <input type="checkbox" id="toggle-remind-sleep" checked>
+                  <span class="toggle-slider-round"></span>
+                </label>
+              </div>
+
+              <!-- 3. Food -->
+              <div class="reminder-item-row">
+                <div class="reminder-info">
+                  <h4>🍎 Don't eat mindless junk food</h4>
+                  <p>Feed your cells foods that grant you vibrant life.</p>
+                </div>
+                <label class="toggle-switch-ios">
+                  <input type="checkbox" id="toggle-remind-junk" checked>
+                  <span class="toggle-slider-round"></span>
+                </label>
+              </div>
+
+              <!-- 4. Posture -->
+              <div class="reminder-item-row">
+                <div class="reminder-info">
+                  <h4>🧘 Unclench jaw & posture alignment</h4>
+                  <p>Roll your shoulders back and lengthen your spine.</p>
+                </div>
+                <label class="toggle-switch-ios">
+                  <input type="checkbox" id="toggle-remind-posture" checked>
+                  <span class="toggle-slider-round"></span>
+                </label>
+              </div>
+
+            </div>
+
+            <button class="outlined-button" id="btn-browser-notifications" style="margin-top: 10px;">
+              🔔 Enable System Desktop Notifications
+            </button>
+          </div>
+
+          <!-- Hydration Tracker Box -->
+          <div class="reminder-card" id="breath">
+            <h3>💧 Hydration Temple & Sound</h3>
+            <p>Log 8 cups daily to keep your cells glowing.</p>
+
+            <div style="margin: 12px 0;">
+              <span class="eyebrow" style="margin-bottom: 8px;">Daily 8 Cups Counter:</span>
+              <div class="water-tracker-row" id="water-cups-row"></div>
+            </div>
+
+            <!-- Somatic Breath -->
+            <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+              <span class="eyebrow" style="margin-bottom: 8px;">4-7-8 Somatic Lotus Breath:</span>
+              <div class="breath-display-box" style="padding: 10px 0;">
+                <div class="breath-circle" id="lotus-circle">
+                  <div class="breath-label" id="breath-label">Begin</div>
+                  <div class="breath-sub" id="breath-sub">Tap for 4-7-8 breath</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ambient Soundscapes -->
+            <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+              <span class="eyebrow" style="margin-bottom: 8px;">Ambient 432Hz Soundscapes:</span>
+              <div class="sound-pills">
+                <button class="sound-pill" data-sound="bowl">🔔 Zen Bowl 528Hz</button>
+                <button class="sound-pill" data-sound="breeze">🌸 Sakura Breeze</button>
+                <button class="sound-pill" data-sound="rain">🌧️ Twilight Rain</button>
+                <button class="sound-pill" data-sound="ocean">🌊 Ocean Waves</button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Dedicated Manual Reminders Subsection -->
+        <div class="manual-reminders-section"
+          style="margin-top: 40px; border-top: 1px solid var(--border); padding-top: 36px;">
+          <div class="section-heading">
+            <div>
+              <div class="eyebrow">Personal Cadence & Nudges</div>
+              <h2>Custom Sanctuary Reminders.</h2>
+              <p style="color: var(--muted-foreground); font-size: 13.5px; margin-top: 4px;">
+                Add your own bespoke reminders — herbal teas, supplements, midday stretches, or evening wind-downs.
+              </p>
+            </div>
+            <div
+              style="font-size: 11px; color: var(--muted-foreground); letter-spacing: 1px; text-transform: uppercase;">
+              Self-Care on your terms
+            </div>
+          </div>
+
+          <div class="manual-reminders-grid">
+
+            <!-- Left: Add Reminder Form -->
+            <div class="custom-reminder-creator">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 20px; font-family: var(--font-display); margin: 0;">✨ Add Gentle Reminder</h3>
+                <span class="custom-rem-badge">Manual Nudge</span>
+              </div>
+              <p style="font-size: 12px; color: var(--muted-foreground); margin: 0;">
+                Craft a reminder that will periodically alert you and hold space for your body.
+              </p>
+
+              <form id="form-add-custom-reminder"
+                style="display: flex; flex-direction: column; gap: 14px; margin-top: 4px;">
+                <div class="custom-reminder-inputs-grid">
+                  <div>
+                    <label
+                      style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted-foreground); margin-bottom: 6px;">Reminder
+                      Title *</label>
+                    <input type="text" id="custom-rem-title" class="custom-rem-input"
+                      placeholder="e.g. Evening Magnesium & Rest" required maxlength="60" />
+                  </div>
+                  <div>
+                    <label
+                      style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted-foreground); margin-bottom: 6px;">Target
+                      Time (Optional)</label>
+                    <input type="text" id="custom-rem-time" class="custom-rem-input"
+                      placeholder="e.g. 09:30 PM, or Every 2 Hours" />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted-foreground); margin-bottom: 6px;">Gentle
+                    Affirmation / Note</label>
+                  <input type="text" id="custom-rem-note" class="custom-rem-input"
+                    placeholder="e.g. Relaxes tense muscles and signals deep sleep" maxlength="120" />
+                </div>
+
+                <div>
+                  <label
+                    style="display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted-foreground); margin-bottom: 6px;">Choose
+                    Icon</label>
+                  <div class="icon-selector-pills" id="icon-picker-group">
+                    <button type="button" class="icon-pick-btn active" data-icon="💊"
+                      title="Supplements/Vitamins">💊</button>
+                    <button type="button" class="icon-pick-btn" data-icon="💧" title="Hydration">💧</button>
+                    <button type="button" class="icon-pick-btn" data-icon="🌙" title="Sleep">🌙</button>
+                    <button type="button" class="icon-pick-btn" data-icon="🍎" title="Nourishment">🍎</button>
+                    <button type="button" class="icon-pick-btn" data-icon="🧘" title="Mindfulness/Posture">🧘</button>
+                    <button type="button" class="icon-pick-btn" data-icon="☀️" title="Sunlight/Walk">☀️</button>
+                    <button type="button" class="icon-pick-btn" data-icon="🍵" title="Tea/Warm Drink">🍵</button>
+                    <button type="button" class="icon-pick-btn" data-icon="🌸" title="Sanctuary">🌸</button>
+                    <button type="button" class="icon-pick-btn" data-icon="📖" title="Reflection">📖</button>
+                    <button type="button" class="icon-pick-btn" data-icon="🌿" title="Nature">🌿</button>
+                    <button type="button" class="icon-pick-btn" data-icon="💆" title="Unwind">💆</button>
+                  </div>
+                  <input type="hidden" id="custom-rem-selected-icon" value="💊" />
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 6px;">
+                  <button type="submit" class="rose-button" style="flex: 1;">
+                    + Add Gentle Reminder
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Right: List of Custom Reminders -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 style="font-size: 20px; font-family: var(--font-display); margin: 0;">Your Scheduled Nudges</h3>
+                  <span id="custom-reminders-count" class="custom-rem-badge">3 active</span>
+                </div>
+                <span style="font-size: 11px; color: var(--muted-foreground);">Toggle or test anytime</span>
+              </div>
+
+              <div class="custom-reminders-list" id="custom-reminders-container">
+                <!-- Rendered dynamically by sanctuary.js -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path
+            d="M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1M9 8a3 3 0 1 0 3 3M9 8h1m5 0a3 3 0 1 1-3 3m3-3h-1m-2 3v-1">
+          </path>
+          <circle cx="12" cy="8" r="2"></circle>
+          <path d="M12 10v12"></path>
+          <path d="M12 22c4.2 0 7-1.667 7-5-4.2 0-7 1.667-7 5Z"></path>
+          <path d="M12 22c-4.2 0-7-1.667-7-5 4.2 0 7 1.667 7 5Z"></path>
+        </svg>
+        Made for your softer side & physical wellness.
+      </span>
+      <span>
+        Bloom in your own time.
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path
+            d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5">
+          </path>
+        </svg>
+      </span>
+    </footer>
+
+  </div>
+
+  <!-- Mobile Drawer Overlay Menu -->
+  <div class="mobile-nav-drawer" id="mobile-nav-drawer" aria-hidden="true">
+    <div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>
+    <div class="mobile-nav-content">
+      <div class="mobile-nav-header">
+        <div class="wordmark-name">aphrodite<span class="text-primary">.</span></div>
+        <button class="icon-button" id="btn-close-mobile-nav" aria-label="Close menu" style="font-size: 18px;">✕</button>
+      </div>
+      <nav class="mobile-nav-links">
+        <a href="#sanctuary" class="mobile-nav-link active">🌸 Sanctuary</a>
+        <a href="#aphrodite-chat" class="mobile-nav-link">💬 Talk to Aphrodite</a>
+        <a href="#journal" class="mobile-nav-link">📖 Sacred Journal</a>
+        <a href="#calendar" class="mobile-nav-link">📅 Planning Calendar</a>
+        <a href="#goals" class="mobile-nav-link">🌿 Goals to Get Done</a>
+        <a href="#reminders" class="mobile-nav-link">🔔 Gentle Reminders</a>
+        <a href="#breath" class="mobile-nav-link">💧 Breath & Sound</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Mobile Floating Dock / Bottom Bar -->
+  <nav class="mobile-bottom-bar" aria-label="Quick mobile navigation">
+    <a href="#sanctuary" class="mobile-tab-btn active" title="Sanctuary">
+      <span>🌸</span>
+      <small>Home</small>
+    </a>
+    <a href="#aphrodite-chat" class="mobile-tab-btn" title="Talk to Aphrodite">
+      <span>💬</span>
+      <small>Aphrodite</small>
+    </a>
+    <a href="#journal" class="mobile-tab-btn" title="Sacred Journal">
+      <span>📖</span>
+      <small>Journal</small>
+    </a>
+    <a href="#calendar" class="mobile-tab-btn" title="Planning Calendar">
+      <span>📅</span>
+      <small>Calendar</small>
+    </a>
+    <a href="#goals" class="mobile-tab-btn" title="Goals">
+      <span>🌿</span>
+      <small>Goals</small>
+    </a>
+    <a href="#reminders" class="mobile-tab-btn" title="Reminders">
+      <span>🔔</span>
+      <small>Nudges</small>
+    </a>
+  </nav>
+
+  <!-- Popup Notification Toasts Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Application Script -->
+  <script type="module" src="/src/js/sanctuary.js"></script>
+</body>
+
+</html>
