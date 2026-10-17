@@ -473,9 +473,188 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-/* Sections Common */
+/* ==========================================================================
+   ISOLATED VIEWS ARCHITECTURE
+   ========================================================================== */
+.sanctuary-view {
+  display: none !important;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.sanctuary-view.active {
+  display: block !important;
+  opacity: 1;
+  transform: translateY(0);
+  animation: sanctuaryViewEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes sanctuaryViewEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sections Common (Isolated Sanctuary Rooms) */
 .section {
-  padding: 56px 0 0;
+  padding: clamp(24px, 4vw, 42px) 0 clamp(48px, 6vw, 80px);
+}
+
+/* Breath Sanctuary Grid */
+.breath-sanctuary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.reminder-wisdom-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Breath Display & Somatic Lotus Circle */
+.breath-display-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.breath-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px dashed var(--primary);
+  background: var(--secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 0 25px var(--accent-glow);
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  user-select: none;
+}
+
+.breath-circle:hover {
+  transform: scale(1.05);
+  border-style: solid;
+}
+
+.breath-circle.inhale {
+  animation: breathInhale 4s ease-in-out forwards;
+}
+
+.breath-circle.hold {
+  animation: breathHold 7s ease-in-out forwards;
+}
+
+.breath-circle.exhale {
+  animation: breathExhale 8s ease-in-out forwards;
+}
+
+@keyframes breathInhale {
+  0% { transform: scale(1); border-color: var(--primary); }
+  100% { transform: scale(1.2); border-color: #10B981; box-shadow: 0 0 35px rgba(16, 185, 129, 0.4); }
+}
+
+@keyframes breathHold {
+  0% { transform: scale(1.2); border-color: #10B981; }
+  100% { transform: scale(1.2); border-color: #6366F1; box-shadow: 0 0 40px rgba(99, 102, 241, 0.45); }
+}
+
+@keyframes breathExhale {
+  0% { transform: scale(1.2); border-color: #6366F1; }
+  100% { transform: scale(1); border-color: var(--primary); box-shadow: 0 0 20px var(--accent-glow); }
+}
+
+.breath-label {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.breath-sub {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+}
+
+/* Hydration Cups Counter */
+.water-tracker-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.water-sip-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.water-sip-btn:hover {
+  transform: scale(1.1);
+  border-color: var(--primary);
+}
+
+.water-sip-btn.filled {
+  background: var(--secondary);
+  border-color: var(--primary);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Sound Pills */
+.sound-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sound-pill {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sound-pill:hover {
+  border-color: var(--primary);
+  background: var(--secondary);
+  color: var(--primary);
+}
+
+.sound-pill.active {
+  border-color: var(--primary);
+  background: var(--secondary);
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: 0 0 14px var(--accent-glow);
 }
 
 .section-heading {
@@ -1678,19 +1857,25 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
   color: var(--muted-foreground);
   text-decoration: none;
   font-size: 10px;
-  padding: 5px 8px;
+  padding: 5px 4px;
   border-radius: 8px;
   transition: all 0.2s ease;
-  min-width: 44px;
+  min-width: 0;
+  flex: 1;
+  text-align: center;
 }
 .mobile-tab-btn span {
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1;
 }
 .mobile-tab-btn small {
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 500;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 .mobile-tab-btn.active,
 .mobile-tab-btn:hover {
@@ -1786,6 +1971,7 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
   .journal-section-grid { grid-template-columns: 1fr; }
   .goals-dashboard-grid { grid-template-columns: 1fr; }
   .reminders-grid { grid-template-columns: 1fr; }
+  .breath-sanctuary-grid { grid-template-columns: 1fr; }
   .themes-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); }
   .hero {
     grid-template-columns: 1fr;

@@ -205,15 +205,66 @@ class MasterSanctuaryApp {
       .replace(/'/g, '&#039;');
   }
 
-  initNavigation() {
-    const navLinks = document.querySelectorAll('.navigation a');
-    navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-      });
+  switchView(viewId) {
+    if (!viewId) viewId = 'sanctuary';
+    const cleanId = viewId.replace('#', '');
+    const targetEl = document.getElementById(cleanId);
+    
+    // Fallback to sanctuary if element doesn't exist or isn't a sanctuary-view
+    const activeEl = (targetEl && targetEl.classList.contains('sanctuary-view'))
+      ? targetEl
+      : document.getElementById('sanctuary');
+
+    if (!activeEl) return;
+    const finalId = activeEl.getAttribute('id') || 'sanctuary';
+
+    // 1. Isolate: Hide all views and reveal only the active room
+    const allViews = document.querySelectorAll('.sanctuary-view');
+    allViews.forEach(view => {
+      view.classList.remove('active');
+    });
+    activeEl.classList.add('active');
+
+    // 2. Synchronize Desktop Navigation
+    document.querySelectorAll('.navigation a').forEach(link => {
+      const href = link.getAttribute('href');
+      link.classList.toggle('active', href === `#${finalId}`);
     });
 
+    // 3. Synchronize Mobile Drawer Links
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      const href = link.getAttribute('href');
+      link.classList.toggle('active', href === `#${finalId}`);
+    });
+
+    // 4. Synchronize Mobile Bottom Dock Tabs
+    document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+      const href = btn.getAttribute('href');
+      btn.classList.toggle('active', href === `#${finalId}`);
+    });
+
+    // 5. Update browser URL history without jump
+    if (window.location.hash !== `#${finalId}`) {
+      try {
+        history.pushState(null, '', `#${finalId}`);
+      } catch (e) {
+        window.location.hash = `#${finalId}`;
+      }
+    }
+
+    // 6. Smoothly reset scroll position to top of isolated room
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 7. Auto-close mobile drawer if currently open
+    const mobileDrawer = document.getElementById('mobile-nav-drawer');
+    if (mobileDrawer && mobileDrawer.classList.contains('open')) {
+      mobileDrawer.classList.remove('open');
+      mobileDrawer.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  initNavigation() {
+    // Theme selector dropdown
     const themeDropdown = document.getElementById('header-theme-selector');
     if (themeDropdown) {
       themeDropdown.value = this.state.activeTheme || 'sakura';
@@ -247,51 +298,29 @@ class MasterSanctuaryApp {
     if (closeDrawerBtn) closeDrawerBtn.onclick = closeDrawer;
     if (drawerBackdrop) drawerBackdrop.onclick = closeDrawer;
 
-    // Mobile Drawer link clicks
-    document.querySelectorAll('.mobile-nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        document.querySelectorAll('.mobile-nav-link').forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        closeDrawer();
-      });
+    // Global Click Interceptor for all hash links pointing to sanctuary views
+    document.addEventListener('click', (e) => {
+      const anchor = e.target.closest('a[href^="#"]');
+      if (!anchor) return;
+      const href = anchor.getAttribute('href');
+      if (!href || href === '#') return;
+      const targetId = href.replace('#', '');
+      const targetView = document.getElementById(targetId);
+      if (targetView && targetView.classList.contains('sanctuary-view')) {
+        e.preventDefault();
+        this.switchView(targetId);
+      }
     });
 
-    // Mobile Bottom Tab Bar clicks
-    const bottomTabBtns = document.querySelectorAll('.mobile-tab-btn');
-    bottomTabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        bottomTabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      });
+    // Hashchange listener for Browser Back & Forward buttons
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '') || 'sanctuary';
+      this.switchView(hash);
     });
 
-    // Scroll spy: synchronize active link with currently visible section
-    const sections = document.querySelectorAll('section[id]');
-    if ('IntersectionObserver' in window && sections.length > 0) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const id = entry.target.getAttribute('id');
-            // update bottom bar
-            bottomTabBtns.forEach(btn => {
-              if (btn.getAttribute('href') === `#${id}`) {
-                bottomTabBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-              }
-            });
-            // update desktop nav
-            navLinks.forEach(link => {
-              if (link.getAttribute('href') === `#${id}`) {
-                navLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-              }
-            });
-          }
-        });
-      }, { rootMargin: '-20% 0px -60% 0px' });
-
-      sections.forEach(sec => observer.observe(sec));
-    }
+    // Initial page load: activate view from URL hash or default to sanctuary
+    const initialHash = window.location.hash.replace('#', '') || 'sanctuary';
+    this.switchView(initialHash);
   }
 
   switchTheme(themeId) {
