@@ -26,6 +26,12 @@ const NUDGE_MESSAGES = [
 
 const DEFAULT_STATE = {
   activeTheme: 'sakura',
+  fluidWide: false,
+  chatSidebarCollapsed: false,
+  journalArchiveHidden: false,
+  journalFocusMode: false,
+  calendarView: 'grid',
+  goalsFilter: 'all',
   rituals: { r1: false, r2: false, r3: false },
   currentMood: 'peaceful',
   savedInspiration: false,
@@ -189,6 +195,16 @@ class MasterSanctuaryApp {
     }, 4500);
   }
 
+  escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   initNavigation() {
     const navLinks = document.querySelectorAll('.navigation a');
     navLinks.forEach(link => {
@@ -325,6 +341,29 @@ class MasterSanctuaryApp {
         }
       });
     }
+
+    // Flexible Chat Guidance Sidebar Toggle
+    const toggleSidebarBtn = document.getElementById('btn-toggle-chat-sidebar');
+    const chatContainer = document.getElementById('aphrodite-chat-container');
+    const updateChatSidebar = () => {
+      const isCollapsed = !!this.state.chatSidebarCollapsed;
+      if (chatContainer) chatContainer.classList.toggle('sidebar-collapsed', isCollapsed);
+      const icon = document.getElementById('chat-sidebar-toggle-icon');
+      const text = document.getElementById('chat-sidebar-toggle-text');
+      if (icon) icon.textContent = isCollapsed ? '📋' : '⇋';
+      if (text) text.textContent = isCollapsed ? 'Show Guidance' : 'Compact View';
+      if (toggleSidebarBtn) toggleSidebarBtn.classList.toggle('active', isCollapsed);
+    };
+
+    if (toggleSidebarBtn) {
+      toggleSidebarBtn.addEventListener('click', () => {
+        this.state.chatSidebarCollapsed = !this.state.chatSidebarCollapsed;
+        this.saveState();
+        updateChatSidebar();
+        this.toast(this.state.chatSidebarCollapsed ? 'Guidance collapsed for spacious chat dialog' : 'Guidance topics restored');
+      });
+    }
+    updateChatSidebar();
 
     // Deficiency quick prompt buttons
     const deficiencyChips = document.querySelectorAll('.deficiency-chip-btn');
@@ -719,6 +758,61 @@ class MasterSanctuaryApp {
         }
       });
     }
+
+    // Flexible Chapters Archive Sidebar Toggle
+    const toggleArchiveBtn = document.getElementById('btn-toggle-archive');
+    const journalGrid = document.getElementById('journal-section-grid');
+    const updateArchiveUI = () => {
+      const isHidden = !!this.state.journalArchiveHidden;
+      if (journalGrid) journalGrid.classList.toggle('archive-hidden', isHidden);
+      const text = document.getElementById('journal-archive-toggle-text');
+      if (text) text.textContent = isHidden ? 'Show Archive' : 'Archive';
+      if (toggleArchiveBtn) toggleArchiveBtn.classList.toggle('active', isHidden);
+    };
+
+    if (toggleArchiveBtn) {
+      toggleArchiveBtn.addEventListener('click', () => {
+        this.state.journalArchiveHidden = !this.state.journalArchiveHidden;
+        this.saveState();
+        updateArchiveUI();
+        this.toast(this.state.journalArchiveHidden ? 'Archive hidden — full editor canvas active' : 'Chapters archive displayed');
+      });
+    }
+    updateArchiveUI();
+
+    // Serene Distraction-Free Focus Mode
+    const focusModeBtn = document.getElementById('btn-focus-mode');
+    const updateFocusModeUI = () => {
+      const isFocus = !!this.state.journalFocusMode;
+      document.body.classList.toggle('journal-focus-active', isFocus);
+      const text = document.getElementById('focus-mode-toggle-text');
+      if (text) text.textContent = isFocus ? 'Exit Focus Mode' : 'Focus Mode';
+      if (focusModeBtn) focusModeBtn.classList.toggle('active', isFocus);
+    };
+
+    if (focusModeBtn) {
+      focusModeBtn.addEventListener('click', () => {
+        this.state.journalFocusMode = !this.state.journalFocusMode;
+        this.saveState();
+        updateFocusModeUI();
+        if (this.state.journalFocusMode) {
+          this.toast('🕊️ Serene Focus Mode active. Press Esc to exit.', '✨');
+          document.getElementById('active-journal-content')?.focus();
+        } else {
+          this.toast('Returned from Focus Mode.', '🌸');
+        }
+      });
+    }
+    updateFocusModeUI();
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.state.journalFocusMode) {
+        this.state.journalFocusMode = false;
+        this.saveState();
+        updateFocusModeUI();
+        this.toast('Returned from Focus Mode.', '🌸');
+      }
+    });
   }
 
   renderJournal() {
@@ -784,17 +878,64 @@ class MasterSanctuaryApp {
   }
 
   // =========================================================================
-  // PLANNING CALENDAR & EVENT SCHEDULER
+  // PLANNING CALENDAR & EVENT SCHEDULER (GRID & AGENDA HORIZONS)
   // =========================================================================
   initCalendar() {
-    this.renderCalendar();
+    this.currentCalendarDate = new Date(2026, 9, 1); // October 2026 base
+
+    // View switcher (Grid vs Agenda)
+    const gridBtn = document.getElementById('btn-view-grid');
+    const agendaBtn = document.getElementById('btn-view-agenda');
+    const gridView = document.getElementById('calendar-grid-view');
+    const agendaView = document.getElementById('calendar-agenda-view');
+    const subtitle = document.getElementById('calendar-header-subtitle');
+
+    const switchCalendarView = (mode) => {
+      this.state.calendarView = mode;
+      this.saveState();
+      if (gridBtn && agendaBtn) {
+        gridBtn.classList.toggle('active', mode === 'grid');
+        agendaBtn.classList.toggle('active', mode === 'agenda');
+      }
+      if (gridView && agendaView) {
+        gridView.style.display = mode === 'grid' ? 'block' : 'none';
+        agendaView.style.display = mode === 'agenda' ? 'flex' : 'none';
+      }
+      if (subtitle) {
+        subtitle.textContent = mode === 'grid'
+          ? 'Click on any day cell to schedule a daily habit or weekly goal'
+          : 'Upcoming schedule horizon — tap "+ Schedule" on any day to add a goal';
+      }
+      this.renderCalendar();
+    };
+
+    if (gridBtn) gridBtn.addEventListener('click', () => switchCalendarView('grid'));
+    if (agendaBtn) agendaBtn.addEventListener('click', () => switchCalendarView('agenda'));
+
+    // Month Navigation
+    const prevMonthBtn = document.getElementById('btn-prev-month');
+    const nextMonthBtn = document.getElementById('btn-next-month');
+
+    if (prevMonthBtn) {
+      prevMonthBtn.addEventListener('click', () => {
+        this.currentCalendarDate.setMonth(this.currentCalendarDate.getMonth() - 1);
+        this.renderCalendar();
+      });
+    }
+    if (nextMonthBtn) {
+      nextMonthBtn.addEventListener('click', () => {
+        this.currentCalendarDate.setMonth(this.currentCalendarDate.getMonth() + 1);
+        this.renderCalendar();
+      });
+    }
 
     const addEventBtn = document.getElementById('btn-add-calendar-event');
     if (addEventBtn) {
       addEventBtn.addEventListener('click', () => {
         const title = prompt('Enter Self-Care Event or Goal (e.g. 💧 Drink 8 cups, 🌙 Sleep at 10pm):');
         if (title && title.trim()) {
-          const day = prompt('Enter Day of the Month (1 to 31):', '10');
+          const daysInMonth = new Date(this.currentCalendarDate.getFullYear(), this.currentCalendarDate.getMonth() + 1, 0).getDate();
+          const day = prompt(`Enter Day of the Month (1 to ${daysInMonth}):`, '10');
           const dayNum = parseInt(day) || 10;
           this.state.calendarEvents.push({
             id: 'ev_' + Date.now(),
@@ -809,68 +950,146 @@ class MasterSanctuaryApp {
         }
       });
     }
+
+    switchCalendarView(this.state.calendarView || 'grid');
   }
 
   renderCalendar() {
+    const year = this.currentCalendarDate.getFullYear();
+    const month = this.currentCalendarDate.getMonth();
+    const monthName = this.currentCalendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    // Update month title
+    const monthDisplay = document.getElementById('calendar-month-display');
+    if (monthDisplay) monthDisplay.textContent = monthName;
+
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const startOffset = new Date(year, month, 1).getDay(); // 0=Sun
+
+    // 1. Render Grid
     const tableBody = document.getElementById('calendar-grid-body');
-    if (!tableBody) return;
+    if (tableBody) {
+      let html = '<tr>';
+      let col = 0;
 
-    // Build October 2026 grid (starts on Thursday)
-    const daysInMonth = 31;
-    const startOffset = 4; // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu
-    let html = '<tr>';
-    let col = 0;
-
-    for (let i = 0; i < startOffset; i++) {
-      html += '<td style="background: var(--muted); opacity: 0.4;"></td>';
-      col++;
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const isToday = day === 10;
-      const events = this.state.calendarEvents.filter(e => e.date === day);
-
-      html += `
-        <td class="${isToday ? 'today' : ''}" data-day="${day}">
-          <div class="day-number">${day} ${isToday ? '• Today' : ''}</div>
-          ${events.map(ev => `<span class="calendar-event-tag">${ev.title}</span>`).join('')}
-        </td>
-      `;
-      col++;
-
-      if (col === 7 && day < daysInMonth) {
-        html += '</tr><tr>';
-        col = 0;
+      for (let i = 0; i < startOffset; i++) {
+        html += '<td style="background: var(--muted); opacity: 0.4;"></td>';
+        col++;
       }
-    }
 
-    while (col > 0 && col < 7) {
-      html += '<td style="background: var(--muted); opacity: 0.4;"></td>';
-      col++;
-    }
-    html += '</tr>';
+      for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = (year === 2026 && month === 9 && day === 10);
+        const events = this.state.calendarEvents.filter(e => e.date === day);
 
-    tableBody.innerHTML = html;
+        html += `
+          <td class="${isToday ? 'today' : ''}" data-day="${day}">
+            <div class="day-number">${day} ${isToday ? '• Today' : ''}</div>
+            ${events.map(ev => `<span class="calendar-event-tag">${this.escapeHtml(ev.title)}</span>`).join('')}
+          </td>
+        `;
+        col++;
 
-    // Click on day cell to schedule quick event
-    tableBody.querySelectorAll('td[data-day]').forEach(cell => {
-      cell.addEventListener('click', () => {
-        const d = cell.dataset.day;
-        const task = prompt(`Add a self-care goal for Day ${d}:`);
-        if (task && task.trim()) {
-          this.state.calendarEvents.push({
-            id: 'ev_' + Date.now(),
-            date: parseInt(d),
-            title: task.trim(),
-            type: 'daily'
-          });
-          this.saveState();
-          this.renderCalendar();
-          soundscape.playChime('bell');
-          this.toast(`Scheduled on day ${d}! 🌿`);
+        if (col === 7 && day < daysInMonth) {
+          html += '</tr><tr>';
+          col = 0;
         }
+      }
+
+      while (col > 0 && col < 7) {
+        html += '<td style="background: var(--muted); opacity: 0.4;"></td>';
+        col++;
+      }
+      html += '</tr>';
+
+      tableBody.innerHTML = html;
+
+      // Click on day cell to schedule quick event
+      tableBody.querySelectorAll('td[data-day]').forEach(cell => {
+        cell.addEventListener('click', () => {
+          const d = cell.dataset.day;
+          const task = prompt(`Add a self-care goal for Day ${d}:`);
+          if (task && task.trim()) {
+            this.state.calendarEvents.push({
+              id: 'ev_' + Date.now(),
+              date: parseInt(d),
+              title: task.trim(),
+              type: 'daily'
+            });
+            this.saveState();
+            this.renderCalendar();
+            soundscape.playChime('bell');
+            this.toast(`Scheduled on day ${d}! 🌿`);
+          }
+        });
       });
-    });
+    }
+
+    // 2. Render Flexible Agenda View
+    const agendaView = document.getElementById('calendar-agenda-view');
+    if (agendaView) {
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      let agendaHtml = '';
+      let scheduledCount = 0;
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const events = this.state.calendarEvents.filter(e => e.date === day);
+        const isToday = (year === 2026 && month === 9 && day === 10);
+        const dayDate = new Date(year, month, day);
+        const dayOfWeek = dayNames[dayDate.getDay()];
+
+        if (events.length > 0 || isToday || (day >= 10 && day <= 17)) {
+          scheduledCount++;
+          agendaHtml += `
+            <div class="agenda-day-card ${isToday ? 'today' : ''}" data-day="${day}">
+              <div class="agenda-day-meta">
+                <div class="agenda-date-badge">
+                  <span>${day}</span>
+                  <small>${dayOfWeek}</small>
+                </div>
+                <div>
+                  <h4 style="font-size: 14.5px; font-weight: 600; color: var(--foreground);">${monthName} ${day} ${isToday ? '• Today' : ''}</h4>
+                  <div class="agenda-events-list" style="margin-top: 6px;">
+                    ${events.length > 0
+                      ? events.map(ev => `<span class="agenda-event-chip">${this.escapeHtml(ev.title)}</span>`).join('')
+                      : '<span class="agenda-empty-events">A quiet, open horizon.</span>'
+                    }
+                  </div>
+                </div>
+              </div>
+              <button class="custom-rem-btn btn-agenda-add-goal" data-day="${day}">
+                + Schedule
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      if (scheduledCount === 0) {
+        agendaHtml = `<div class="custom-reminders-empty">No events scheduled for ${monthName}. Tap "+ Schedule Goal" to begin your cadence.</div>`;
+      }
+
+      agendaView.innerHTML = agendaHtml;
+
+      agendaView.querySelectorAll('.btn-agenda-add-goal').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const d = btn.dataset.day;
+          const task = prompt(`Schedule a self-care goal for ${monthName} ${d}:`);
+          if (task && task.trim()) {
+            this.state.calendarEvents.push({
+              id: 'ev_' + Date.now(),
+              date: parseInt(d),
+              title: task.trim(),
+              type: 'daily'
+            });
+            this.saveState();
+            this.renderCalendar();
+            soundscape.playChime('bell');
+            this.toast(`Scheduled on day ${d}! 🌿`);
+          }
+        });
+      });
+    }
   }
 
   // =========================================================================
@@ -904,10 +1123,11 @@ class MasterSanctuaryApp {
       addQuestBtn.addEventListener('click', () => {
         const text = prompt('Enter Quest to get done:');
         if (text && text.trim()) {
+          const domain = prompt('Enter Focus Domain (body, mind, spirit, craft):', 'body') || 'body';
           this.state.quests.push({
             id: 'q_' + Date.now(),
             title: text.trim(),
-            domain: 'body',
+            domain: domain.toLowerCase().trim(),
             priority: 'urgent',
             completed: false
           });
@@ -918,42 +1138,74 @@ class MasterSanctuaryApp {
         }
       });
     }
+
+    // Flexible Filter Pills Bar
+    const filterPills = document.querySelectorAll('#goals-filter-bar .filter-pill');
+    filterPills.forEach(pill => {
+      if (pill.dataset.filter === (this.state.goalsFilter || 'all')) {
+        filterPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+      }
+      pill.addEventListener('click', () => {
+        filterPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        this.state.goalsFilter = pill.dataset.filter || 'all';
+        this.saveState();
+        this.renderGoals();
+      });
+    });
   }
 
   renderGoals() {
-    // 1. Daily Habits List
+    const filter = this.state.goalsFilter || 'all';
+
+    // 1. Daily Habits List (Filtered)
     const dailyContainer = document.getElementById('daily-goals-container');
     if (dailyContainer) {
-      dailyContainer.innerHTML = this.state.dailyGoals.map(goal => `
-        <div class="habit-row-item ${goal.completed ? 'done' : ''}" data-id="${goal.id}">
-          <div style="display: flex; align-items: center;">
-            <div class="habit-check-btn" data-goal-id="${goal.id}">
-              ${goal.completed ? '✓' : ''}
-            </div>
-            <span style="font-size: 13.5px; font-weight: 500;">${goal.title}</span>
-          </div>
-          <span style="font-size: 11.5px; color: var(--primary); font-weight: 600;">🔥 ${goal.streak}d</span>
-        </div>
-      `).join('');
-
-      dailyContainer.querySelectorAll('.habit-check-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.goalId;
-          const g = this.state.dailyGoals.find(item => item.id === id);
-          if (g) {
-            g.completed = !g.completed;
-            g.streak = g.completed ? g.streak + 1 : Math.max(0, g.streak - 1);
-            this.saveState();
-            this.renderGoals();
-
-            if (g.completed) {
-              soundscape.playChime('bell');
-              if (this.petals) this.petals.celebrate();
-              this.toast(`Radiant! Completed: "${g.title}" 🌸`, '✨');
-            }
-          }
-        });
+      const filteredDaily = this.state.dailyGoals.filter(goal => {
+        if (filter === 'all') return true;
+        if (filter === 'completed') return goal.completed;
+        return (goal.category || 'body') === filter;
       });
+
+      if (filteredDaily.length === 0) {
+        dailyContainer.innerHTML = `
+          <div style="padding: 16px; text-align: center; color: var(--muted-foreground); font-size: 12px; font-style: italic; border: 1px dashed var(--border); border-radius: 4px;">
+            No daily habits in this domain yet. Tap "+ Add Daily Goal" to nurture one. 🌿
+          </div>
+        `;
+      } else {
+        dailyContainer.innerHTML = filteredDaily.map(goal => `
+          <div class="habit-row-item ${goal.completed ? 'done' : ''}" data-id="${goal.id}">
+            <div style="display: flex; align-items: center;">
+              <div class="habit-check-btn" data-goal-id="${goal.id}">
+                ${goal.completed ? '✓' : ''}
+              </div>
+              <span style="font-size: 13.5px; font-weight: 500;">${this.escapeHtml(goal.title)}</span>
+            </div>
+            <span style="font-size: 11.5px; color: var(--primary); font-weight: 600;">🔥 ${goal.streak}d</span>
+          </div>
+        `).join('');
+
+        dailyContainer.querySelectorAll('.habit-check-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.goalId;
+            const g = this.state.dailyGoals.find(item => item.id === id);
+            if (g) {
+              g.completed = !g.completed;
+              g.streak = g.completed ? g.streak + 1 : Math.max(0, g.streak - 1);
+              this.saveState();
+              this.renderGoals();
+
+              if (g.completed) {
+                soundscape.playChime('bell');
+                if (this.petals) this.petals.celebrate();
+                this.toast(`Radiant! Completed: "${g.title}" 🌸`, '✨');
+              }
+            }
+          });
+        });
+      }
     }
 
     // 2. Weekly Targets
@@ -964,7 +1216,7 @@ class MasterSanctuaryApp {
         return `
           <div style="border: 1px solid var(--border); padding: 12px; border-radius: 4px; background: var(--muted); margin-bottom: 10px;">
             <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600;">
-              <span>${wg.title}</span>
+              <span>${this.escapeHtml(wg.title)}</span>
               <span style="color: var(--primary);">${wg.current} / ${wg.target} days</span>
             </div>
             <div class="progress-track-bar">
@@ -993,39 +1245,53 @@ class MasterSanctuaryApp {
       });
     }
 
-    // 3. Quests Board
+    // 3. Quests Board (Filtered)
     const questContainer = document.getElementById('quests-board-container');
     if (questContainer) {
-      questContainer.innerHTML = this.state.quests.map(q => `
-        <div class="habit-row-item ${q.completed ? 'done' : ''}" data-quest-id="${q.id}">
-          <div style="display: flex; align-items: center;">
-            <div class="habit-check-btn" data-qid="${q.id}">
-              ${q.completed ? '✓' : ''}
-            </div>
-            <span style="font-size: 13px;">${q.title}</span>
-          </div>
-          <span style="font-size: 10px; padding: 2px 7px; border-radius: 3px; background: var(--secondary); color: var(--primary); text-transform: uppercase;">
-            ${q.priority}
-          </span>
-        </div>
-      `).join('');
-
-      questContainer.querySelectorAll('.habit-check-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.qid;
-          const q = this.state.quests.find(item => item.id === id);
-          if (q) {
-            q.completed = !q.completed;
-            this.saveState();
-            this.renderGoals();
-            if (q.completed) {
-              soundscape.playChime('bell');
-              if (this.petals) this.petals.celebrate();
-              this.toast(`Quest completed: "${q.title}"! 🕊️`);
-            }
-          }
-        });
+      const filteredQuests = this.state.quests.filter(q => {
+        if (filter === 'all') return true;
+        if (filter === 'completed') return q.completed;
+        return (q.domain || 'body') === filter;
       });
+
+      if (filteredQuests.length === 0) {
+        questContainer.innerHTML = `
+          <div style="padding: 16px; text-align: center; color: var(--muted-foreground); font-size: 12px; font-style: italic; border: 1px dashed var(--border); border-radius: 4px;">
+            No quests in this domain. Tap "+ Add Quest" to chart a gentle milestone. 🗺️
+          </div>
+        `;
+      } else {
+        questContainer.innerHTML = filteredQuests.map(q => `
+          <div class="habit-row-item ${q.completed ? 'done' : ''}" data-quest-id="${q.id}">
+            <div style="display: flex; align-items: center;">
+              <div class="habit-check-btn" data-qid="${q.id}">
+                ${q.completed ? '✓' : ''}
+              </div>
+              <span style="font-size: 13px;">${this.escapeHtml(q.title)}</span>
+            </div>
+            <span style="font-size: 10px; padding: 2px 7px; border-radius: 3px; background: var(--secondary); color: var(--primary); text-transform: uppercase;">
+              ${q.priority || 'flow'}
+            </span>
+          </div>
+        `).join('');
+
+        questContainer.querySelectorAll('.habit-check-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.qid;
+            const q = this.state.quests.find(item => item.id === id);
+            if (q) {
+              q.completed = !q.completed;
+              this.saveState();
+              this.renderGoals();
+              if (q.completed) {
+                soundscape.playChime('bell');
+                if (this.petals) this.petals.celebrate();
+                this.toast(`Quest completed: "${q.title}"! 🕊️`);
+              }
+            }
+          });
+        });
+      }
     }
   }
 
@@ -1384,6 +1650,25 @@ class MasterSanctuaryApp {
   }
 
   initHeaderActions() {
+    // Flexible Full-Width / Standard Layout Width Toggle
+    const layoutWidthBtn = document.getElementById('btn-toggle-layout-width');
+    const shell = document.querySelector('.page-shell');
+    if (this.state.fluidWide && shell) {
+      shell.classList.add('fluid-wide');
+      if (layoutWidthBtn) layoutWidthBtn.classList.add('active');
+    }
+    if (layoutWidthBtn) {
+      layoutWidthBtn.addEventListener('click', () => {
+        this.state.fluidWide = !this.state.fluidWide;
+        this.saveState();
+        if (shell) {
+          shell.classList.toggle('fluid-wide', this.state.fluidWide);
+        }
+        layoutWidthBtn.classList.toggle('active', this.state.fluidWide);
+        this.toast(this.state.fluidWide ? 'Expanded to Flexible Full-Width View ⛶' : 'Standard Focus Width Restored ▫');
+      });
+    }
+
     const quietBtn = document.getElementById('btn-quiet-mode');
     if (quietBtn) {
       quietBtn.addEventListener('click', () => {
