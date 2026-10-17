@@ -727,22 +727,22 @@ a { color: inherit; text-decoration: none; }
 /* --- SECTION 1: HERO & SANCTUARY --- */
 .hero {
   background: var(--muted);
-  min-height: 520px;
-  height: auto;
+  height: 600px;
+  min-height: 560px;
   position: relative;
   overflow: hidden;
   border-radius: 6px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.95fr);
-  align-items: center;
+  display: block;
 }
 .hero-image {
   object-fit: cover;
-  object-position: center top;
-  width: 100%;
+  object-position: center 15%;
+  width: 55%;
   height: 100%;
-  min-height: 480px;
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 0;
 }
 .hero::after {
   content: "";
@@ -754,14 +754,14 @@ a { color: inherit; text-decoration: none; }
 }
 .hero-copy {
   z-index: 2;
-  max-width: 580px;
-  padding: clamp(28px, 5vw, 68px);
+  max-width: 540px;
+  padding: 85px 0 0 clamp(36px, 5vw, 68px);
   position: relative;
 }
 .hero h1 {
   color: var(--foreground);
-  margin: clamp(12px, 2vw, 22px) 0;
-  font-size: clamp(38px, 5.5vw, 70px);
+  margin: clamp(14px, 2vw, 22px) 0;
+  font-size: clamp(42px, 5vw, 70px);
   line-height: 1.04;
 }
 .hero h1 em {
@@ -1960,7 +1960,7 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
 /* =========================================================================
    RESPONSIVE DESIGN SYSTEM (TABLET & MOBILE)
    ========================================================================= */
-@media (max-width: 1180px) {
+@media (max-width: 960px) {
   .page-shell { padding: 0 clamp(16px, 3vw, 24px); }
   .navigation { display: none !important; }
   .mobile-menu-toggle { display: flex !important; }
@@ -1974,15 +1974,38 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
   .breath-sanctuary-grid { grid-template-columns: 1fr; }
   .themes-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); }
   .hero {
-    grid-template-columns: 1fr;
-    height: auto;
+    height: auto !important;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    background: var(--muted);
   }
   .hero-image {
-    height: clamp(260px, 40vw, 360px);
-    min-height: auto;
+    position: relative !important;
+    width: 100% !important;
+    height: clamp(280px, 40vw, 380px) !important;
+    top: auto !important;
+    right: auto !important;
+    object-fit: cover;
+    object-position: center 20%;
+    z-index: 0;
   }
-  .hero-copy { padding: clamp(20px, 4vw, 36px); }
-  .hero h1 { font-size: clamp(38px, 6vw, 56px); }
+  .hero::after {
+    height: clamp(280px, 40vw, 380px);
+    background: linear-gradient(180deg, transparent 40%, var(--muted) 96%) !important;
+    bottom: auto;
+  }
+  .hero-copy {
+    position: relative !important;
+    padding: clamp(20px, 4vw, 36px) clamp(16px, 3vw, 28px) clamp(28px, 5vw, 40px) !important;
+    max-width: 100% !important;
+    z-index: 2;
+  }
+  .hero h1 { font-size: clamp(36px, 6.5vw, 52px); }
+  .hero-caption, .hero-side { display: none !important; }
 }
 
 @media (max-width: 768px) {
