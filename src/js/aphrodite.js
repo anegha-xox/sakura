@@ -185,23 +185,23 @@ export class AphroditeEngine {
       action = { title: 'Begin the smallest 2-minute piece with kindness', domain: 'craft' };
     }
     else if (lower.includes('tired') || lower.includes('exhaust') || lower.includes('sleep') || lower.includes('drained')) {
-      replyText = `Your temple is asking for rest, darling. Sleep and quiet are not rewards you have to earn; they are the water that keeps your petals soft.\n\nRelease the need to finish everything tonight. Tomorrow will meet you with fresh light.\n\nOne small step: Close your eyes and rest your head on a soft pillow for five uninterrupted minutes.`;
+      replyText = `Your body is asking for rest. Sleep and quiet are not rewards you have to earn; they are essential for your health.\n\nRelease the need to finish everything tonight. Tomorrow will give you a fresh start.\n\nOne small step: Close your eyes and rest your head on a soft pillow for five uninterrupted minutes.`;
       action = { title: 'Five minutes of quiet rest with eyes closed', domain: 'body' };
     }
     else if (lower.includes('water') || lower.includes('thirst') || lower.includes('drink')) {
-      replyText = `A gentle sip of water restores your bloom from within. Notice how good it feels to give your body what it gently asks for.\n\nOne small step: Drink a tall glass of cool water and feel it replenish you.`;
+      replyText = `A glass of water helps replenish your energy. Notice how good it feels to give your body what it needs.\n\nOne small step: Drink a tall glass of cool water.`;
       action = { title: 'Drink a tall glass of cool water', domain: 'body' };
     }
     else if (lower.includes('won') || lower.includes('did it') || lower.includes('finished') || lower.includes('proud') || lower.includes('happy')) {
-      replyText = `Radiant! Look at what you nurtured into being. Notice this warm feeling in your chest and honor the quiet effort it took to arrive here.\n\nLet yourself bask in this joy without rushing to the next summit.\n\nOne small step: Close your eyes and savor this feeling for ten uninterrupted seconds.`;
+      replyText = `Great job! Look at what you accomplished. Take a moment to feel proud of your effort.\n\nCelebrate your progress today.\n\nOne small step: Close your eyes and enjoy this feeling for ten uninterrupted seconds.`;
       action = { title: 'Pause for 10 seconds and celebrate your victory', domain: 'spirit' };
     }
     else if (lower.includes('journal') || lower.includes('write') || lower.includes('prompt')) {
-      replyText = `Your journal is a sacred sanctuary where every thought is welcomed without critique. Pouring your mind onto paper frees your spirit.\n\nOne small step: Open your Sacred Journal and write one sentence about what your heart needs today.`;
-      action = { title: 'Write one honest sentence in Sacred Journal', domain: 'craft' };
+      replyText = `Your journal is a quiet space where every thought is welcomed without judgment. Writing things down helps clear your mind.\n\nOne small step: Open your Journal and write one sentence about how you are feeling today.`;
+      action = { title: 'Write one honest sentence in your Journal', domain: 'craft' };
     }
     else if (lower.includes('lonely') || lower.includes('alone') || lower.includes('sad') || lower.includes('cry')) {
-      replyText = `I am right here with you, sweet one. Sadness is not a flaw; it is proof of how deeply and tenderly you can love and feel.\n\nWrap your arms around yourself and let the tears flow if they need to. You are never truly alone.\n\nOne small step: Wrap yourself in a warm blanket and place a comforting hand over your heart.`;
+      replyText = `I am right here with you. Sadness is normal, and it is okay to feel what you are feeling.\n\nTake things slowly and give yourself time. You are not alone.\n\nOne small step: Wrap yourself in a warm blanket and place a comforting hand over your heart.`;
       action = { title: 'Rest in a warm blanket with hand on heart', domain: 'spirit' };
     }
     else {
@@ -222,7 +222,7 @@ export class AphroditeEngine {
 
   // Optional external LLM call (OpenAI/Anthropic/Gemini) if user connects API key
   async callExternalLLM(prompt, state) {
-    const systemPrompt = `You are Aphrodite, the compassionate companion behind Sakura self-care app. Voice: warm, graceful, unhurried, maternal but playful. Never shame or diagnose. Structure: 1. Acknowledge in user's words. 2. Short gentle reframe. 3. End with "One small step: [concrete 2-minute somatic micro-action]". Under 100 words.`;
+    const systemPrompt = `You are Sakura, a friendly and supportive self-care companion. Voice: warm, encouraging, calm, and grounded. Never shame or diagnose. Structure: 1. Acknowledge in user's words. 2. Short gentle encouragement. 3. End with "One small step: [concrete 2-minute action]". Under 100 words.`;
 
     // Example fetch to OpenAI-compatible endpoint
     const response = await fetch('https://api.openai.com/v1/chat/completions', {

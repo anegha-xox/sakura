@@ -1,5 +1,5 @@
 // ==========================================================================
-// Sakura Breath & Sound Sanctuary Engine
+// Sakura Breath & Sound Engine
 // 4-7-8 Glowing Lotus Breathing Pacer & Procedural Ambient Soundscape Controls
 // ==========================================================================
 
@@ -25,11 +25,11 @@ export class SanctuaryManager {
     const state = store.getState();
 
     this.container.innerHTML = `
-      <!-- Breathing Lotus Sanctuary Section -->
+      <!-- Breathing Section -->
       <div class="breathing-box">
-        <h2 class="breathing-title">🪷 Sacred Breath Pacer</h2>
+        <h2 class="breathing-title">🌸 Breathing Exercise</h2>
         <p class="breathing-subtitle">
-          The 4-7-8 somatic rhythm signals your vagus nerve to dissolve anxiety and return to peace.
+          The 4-7-8 breathing technique helps relax your body and reduce stress.
         </p>
 
         <div class="lotus-circle-outer">
@@ -106,11 +106,11 @@ export class SanctuaryManager {
   }
 
   getAffirmation() {
-    if (!this.isBreathing) return 'Rest in the knowledge that you are whole right now.';
-    if (this.phase === 'inhale') return 'Drinking in calm, coolness, and space...';
-    if (this.phase === 'hold') return 'Resting in the sacred stillness of the pause...';
-    if (this.phase === 'exhale') return 'Releasing tension, softening the jaw and belly...';
-    return 'Breathe softly...';
+    if (!this.isBreathing) return 'Take a moment to unwind and relax.';
+    if (this.phase === 'inhale') return 'Breathe in slowly and deeply...';
+    if (this.phase === 'hold') return 'Hold your breath gently...';
+    if (this.phase === 'exhale') return 'Exhale slowly and completely...';
+    return 'Breathe gently...';
   }
 
   attachEvents() {

@@ -1,7 +1,7 @@
 {
   "name": "sakura-self-care",
   "version": "1.0.0",
-  "description": "Sakura - A luxurious self-care and reflection app with themed journaling, gentle goal tracking, and Aphrodite companion.",
+  "description": "Sakura - A luxurious self-care and reflection sanctuary with 15 dramatic themes, planning calendar, gentle goals, and mindful reminders.",
   "type": "module",
   "scripts": {
     "dev": "vite",

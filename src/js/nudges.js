@@ -50,8 +50,8 @@ export class VitalityManager {
       <!-- Hydration Card -->
       <div class="vitality-card">
         <div class="vitality-card-header">
-          <h3>💧 Hydration Sanctuary</h3>
-          <p>Every sip is a tender offering to your cells and spirit.</p>
+          <h3>💧 Daily Hydration</h3>
+          <p>Drink water throughout the day to stay energized and refreshed.</p>
         </div>
 
         <div class="water-glasses-row">
@@ -110,8 +110,8 @@ export class VitalityManager {
 
           <div class="nudge-item">
             <div class="nudge-info">
-              <h4>🍎 Nourishment Temple</h4>
-              <p>Feed your temple nourishing foods; leave mindless junk behind.</p>
+              <h4>🍎 Healthy Meals</h4>
+              <p>Choose nutritious foods that give your body steady energy.</p>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" id="toggle-nudge-nourish" ${state.nudges.nourishment ? 'checked' : ''}>
@@ -197,10 +197,10 @@ export class VitalityManager {
     if (btnPreview) {
       btnPreview.addEventListener('click', () => {
         const msgs = [
-          { text: 'A gentle sip of water restores your bloom.', icon: '💧' },
-          { text: 'Unclench your neck and let your spine lengthen with ease.', icon: '🧘' },
-          { text: 'Evening descends. Step toward rest with warmth and kindness.', icon: '🌙' },
-          { text: 'Feed your temple nourishing foods; breathe deep.', icon: '🍎' }
+          { text: 'Remember to drink a glass of water and stay hydrated.', icon: '💧' },
+          { text: 'Take a moment to stretch your neck and relax your shoulders.', icon: '🧘' },
+          { text: 'Time to wind down for a restful night of sleep.', icon: '🌙' },
+          { text: 'Enjoy a healthy snack or meal to keep your energy up.', icon: '🍎' }
         ];
         const randomNudge = msgs[Math.floor(Math.random() * msgs.length)];
         soundscape.playChime('bell');
@@ -215,7 +215,7 @@ export class VitalityManager {
         if ('Notification' in window) {
           Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-              showToast('Gentle notifications enabled for your sanctuary!', '🔔');
+              showToast('Notifications enabled!', '🔔');
               new Notification('Sakura 🌸', {
                 body: 'Your safe space is always here for you.',
                 icon: '/assets/aphrodite_avatar.png'

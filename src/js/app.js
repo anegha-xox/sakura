@@ -388,7 +388,7 @@ class SakuraApp {
         applyTheme(id);
         store.setState({ activeTheme: id });
         this.renderThemeSwatches();
-        showToast(`Embodied theme: ${id} 🌸`, '🎨');
+        showToast(`Theme updated: ${id} 🌸`, '🎨');
       });
     });
   }
@@ -563,7 +563,7 @@ class SakuraApp {
     store.setState({ activeTheme: nextTheme });
     this.renderThemeSwatches();
     soundscape.playChime('chime');
-    showToast(nextTheme === 'sakura' ? 'Embodied Day Mode (Cherry Blossom) 🌸' : 'Embodied Night Mode (Lily Glow) 🪷', '🌙');
+    showToast(nextTheme === 'sakura' ? 'Day Mode (Cherry Blossom) 🌸' : 'Night Mode (Lily Glow) 🪷', '🌙');
   }
 }
 

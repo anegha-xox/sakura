@@ -518,7 +518,7 @@ a { color: inherit; text-decoration: none; }
   justify-content: space-between;
 }
 
-/* Breath Display & Somatic Lotus Circle */
+/* Breath Display & Breathing Lotus Circle */
 .breath-display-box {
   display: flex;
   justify-content: center;
@@ -953,190 +953,9 @@ a { color: inherit; text-decoration: none; }
   display: flex;
 }
 
-/* --- SECTION 2: APHRODITE WELLNESS CHATBOT --- */
-.aphrodite-chat-container {
-  display: grid;
-  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
-  gap: clamp(16px, 2.5vw, 28px);
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: clamp(16px, 2.5vw, 28px);
-  box-shadow: var(--shadow-soft);
-  min-height: 560px;
-  transition: all 0.3s ease;
-}
 
-.aphrodite-chat-container.sidebar-collapsed {
-  grid-template-columns: 1fr;
-}
-.aphrodite-chat-container.sidebar-collapsed .aphrodite-profile-card {
-  display: none;
-}
 
-.aphrodite-profile-card {
-  border-right: 1px solid var(--border);
-  padding-right: clamp(16px, 2.5vw, 28px);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.aphrodite-avatar-large {
-  width: clamp(60px, 7vw, 80px);
-  height: clamp(60px, 7vw, 80px);
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--primary);
-  box-shadow: 0 4px 18px var(--accent-glow);
-}
-
-.aphrodite-deficiencies-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.deficiency-chip-btn {
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-  background: var(--muted);
-  color: var(--foreground);
-  font-size: 11.5px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.deficiency-chip-btn:hover,
-.deficiency-chip-btn.active {
-  background: var(--secondary);
-  color: var(--primary);
-  border-color: var(--primary);
-}
-.deficiency-chip-btn.active {
-  box-shadow: 0 0 10px var(--accent-glow);
-  font-weight: 600;
-}
-
-.chat-bubble-thinking {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-style: italic;
-  color: var(--muted-foreground);
-  font-size: 13px;
-}
-.chat-bubble-thinking .dot-pulse {
-  animation: pulseGentle 1.4s infinite ease-in-out;
-  display: inline-block;
-}
-@keyframes pulseGentle {
-  0%, 100% { opacity: 0.35; transform: scale(0.95); }
-  50% { opacity: 1; transform: scale(1.08); }
-}
-
-.chat-dialog-area {
-  display: flex;
-  flex-direction: column;
-  height: 520px;
-}
-
-.chat-stream-scroll {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-right: 10px;
-  scroll-behavior: smooth;
-}
-
-.chat-bubble-row {
-  display: flex;
-  gap: 12px;
-  max-width: 85%;
-}
-.chat-bubble-row.aphrodite { align-self: flex-start; }
-.chat-bubble-row.user { align-self: flex-end; flex-direction: row-reverse; }
-
-.chat-bubble-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.chat-bubble-card {
-  padding: 14px 18px;
-  border-radius: 12px;
-  font-size: 13.5px;
-  line-height: 1.6;
-}
-.chat-bubble-row.aphrodite .chat-bubble-card {
-  background: var(--chat-bubble-aphrodite);
-  border: 1px solid var(--border);
-  color: var(--foreground);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-}
-.chat-bubble-row.user .chat-bubble-card {
-  background: var(--chat-bubble-user);
-  color: var(--chat-bubble-user-text);
-}
-
-.action-suggested-card {
-  margin-top: 12px;
-  padding: 10px 14px;
-  background: var(--secondary);
-  border-left: 3px solid var(--primary);
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.action-suggested-card span {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--foreground);
-}
-.btn-quick-add-goal {
-  padding: 5px 12px;
-  border-radius: 20px;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-.btn-quick-add-goal:hover { background: var(--primary-hover); transform: translateY(-1px); }
-
-.chat-input-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-top: 1px solid var(--border);
-  padding-top: 14px;
-  margin-top: 10px;
-}
-.chat-input-field {
-  flex: 1;
-  padding: 10px 16px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-  background: var(--muted);
-  color: var(--foreground);
-  font-size: 13.5px;
-  outline: none;
-}
-.chat-input-field:focus { border-color: var(--primary); }
-
-/* --- SECTION 3: SACRED JOURNAL WITH 15 THEMES --- */
+/* --- SECTION 3: DAILY JOURNAL WITH 15 THEMES --- */
 .journal-section-grid {
   display: grid;
   grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
@@ -1966,8 +1785,7 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
   .mobile-menu-toggle { display: flex !important; }
   .mobile-bottom-bar { display: flex !important; }
   .page-shell { padding-bottom: 76px; }
-  .aphrodite-chat-container { grid-template-columns: 1fr; }
-  .aphrodite-profile-card { border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 20px; }
+
   .journal-section-grid { grid-template-columns: 1fr; }
   .goals-dashboard-grid { grid-template-columns: 1fr; }
   .reminders-grid { grid-template-columns: 1fr; }
@@ -2137,78 +1955,9 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
     font-size: 16px;
   }
 
-  /* Aphrodite Chat */
-  .aphrodite-chat-container {
-    grid-template-columns: 1fr;
-    padding: 16px 14px;
-    gap: 16px;
-    min-height: auto;
-  }
-  .aphrodite-profile-card {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding-right: 0;
-    padding-bottom: 14px;
-    gap: 12px;
-  }
-  .aphrodite-avatar-large {
-    width: 56px;
-    height: 56px;
-  }
-  .aphrodite-deficiencies-list {
-    flex-direction: row;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 6px;
-    gap: 8px;
-    scrollbar-width: none;
-  }
-  .aphrodite-deficiencies-list::-webkit-scrollbar {
-    display: none;
-  }
-  .deficiency-chip-btn {
-    flex-shrink: 0;
-    white-space: nowrap;
-    font-size: 11px;
-    padding: 7px 11px;
-  }
-  .chat-dialog-area {
-    height: 440px;
-  }
-  .chat-stream-scroll {
-    gap: 12px;
-    padding-right: 4px;
-  }
-  .chat-bubble-row {
-    max-width: 94%;
-  }
-  .chat-bubble-card {
-    padding: 12px 14px;
-    font-size: 13px;
-  }
-  .action-suggested-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .btn-quick-add-goal {
-    width: 100%;
-    text-align: center;
-  }
-  .chat-input-bar {
-    padding-top: 10px;
-    gap: 6px;
-  }
-  .chat-input-field {
-    font-size: 16px !important; /* Prevents unwanted iOS Safari zooming */
-    padding: 9px 12px;
-  }
-  #btn-send-chat {
-    padding: 0 14px !important;
-    font-size: 12px;
-  }
 
-  /* Sacred Journal */
+
+  /* Daily Journal */
   .journal-section-grid {
     grid-template-columns: 1fr;
     gap: 16px;

@@ -1277,7 +1277,7 @@ html, body {
   40% { transform: scale(1); opacity: 1; }
 }
 
-/* --- View 2: Sacred Journal (Chapters & 15 Themes) --- */
+/* --- View 2: Daily Journal (Entries & 15 Themes) --- */
 #view-journal {
   padding: 32px;
   display: flex;
@@ -1563,7 +1563,7 @@ html, body {
   color: var(--ink-muted);
 }
 
-/* --- View 3: Gentle Horizons (Goals, Micro-habits & Quests) --- */
+/* --- View 3: Goals & Habits (Goals, Habits & Tasks) --- */
 #view-goals {
   padding: 32px;
   overflow-y: auto;

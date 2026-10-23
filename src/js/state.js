@@ -6,9 +6,9 @@ const STORAGE_KEY = 'sakura_app_state_v2';
 
 const defaultState = {
   profile: {
-    username: 'Beloved Wanderer',
-    companionName: 'Sakura (Aphrodite)',
-    tagline: 'Your safe space, always 🌸',
+    username: 'Friend',
+    companionName: 'Sakura',
+    tagline: 'Your personal wellness space 🌸',
     avatarUrl: '/assets/aphrodite_avatar.png'
   },
   activeTheme: 'sakura',

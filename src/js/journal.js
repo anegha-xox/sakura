@@ -1,5 +1,5 @@
 // ==========================================================================
-// Sakura Sacred Journal Engine
+// Sakura Journal Engine
 // Rich journaling with 15 themes, mood tracking, autosave & reflection prompts
 // ==========================================================================
 
@@ -61,7 +61,7 @@ export class JournalManager {
       <div class="journal-sidebar-pane">
         <div class="journal-search-box">
           <span style="font-size: 15px; opacity: 0.6;">🔍</span>
-          <input type="text" class="journal-search-input" id="journal-search" placeholder="Search chapters..." value="${this.searchQuery}">
+          <input type="text" class="journal-search-input" id="journal-search" placeholder="Search entries..." value="${this.searchQuery}">
         </div>
 
         <div class="journal-filter-pills">
@@ -74,13 +74,13 @@ export class JournalManager {
         </div>
 
         <button class="btn-glass-primary" id="btn-new-chapter" style="padding: 10px 14px; font-size: 13.5px;">
-          <span>+</span> New Chapter
+          <span>+</span> New Entry
         </button>
 
         <div class="journal-entries-list">
           ${filteredEntries.map(entry => `
             <div class="journal-card-item ${entry.id === activeEntry?.id ? 'active' : ''}" data-id="${entry.id}">
-              <div class="journal-card-title">${entry.title || 'Untitled Chapter'}</div>
+              <div class="journal-card-title">${entry.title || 'Untitled Entry'}</div>
               <div class="journal-card-preview">${entry.content.replace(/\n/g, ' ') || 'Blank page...'}</div>
               <div class="journal-card-meta">
                 <span>${moodIcons[entry.mood] || '🌸'} ${entry.updatedAt}</span>
@@ -91,11 +91,11 @@ export class JournalManager {
         </div>
       </div>
 
-      <!-- Right Pane: Active Chapter Editor -->
+      <!-- Right Pane: Active Entry Editor -->
       <div class="journal-editor-pane">
         ${activeEntry ? `
           <div class="journal-editor-header">
-            <input type="text" class="journal-title-input" id="journal-title" value="${activeEntry.title}" placeholder="Chapter Title...">
+            <input type="text" class="journal-title-input" id="journal-title" value="${activeEntry.title}" placeholder="Entry Title...">
             
             <div class="journal-meta-selectors">
               <select class="theme-selector-dropdown" id="journal-theme-select">
@@ -114,7 +114,7 @@ export class JournalManager {
                 `).join('')}
               </div>
 
-              <button class="tool-btn" id="btn-delete-chapter" style="color: #ef4444;" title="Delete Chapter">🗑️</button>
+              <button class="tool-btn" id="btn-delete-chapter" style="color: #ef4444;" title="Delete Entry">🗑️</button>
             </div>
           </div>
 
@@ -130,22 +130,22 @@ export class JournalManager {
           </div>
 
           <div class="journal-textarea-container">
-            <textarea class="journal-textarea" id="journal-content" placeholder="Let your thoughts unfold softly like cherry petals...">${activeEntry.content}</textarea>
+            <textarea class="journal-textarea" id="journal-content" placeholder="Write your thoughts and reflections here...">${activeEntry.content}</textarea>
           </div>
 
           <div class="journal-editor-footer">
             <div style="display: flex; gap: 16px;">
               <span>📝 ${words} words</span>
               <span>⏳ ${readingTime} min read</span>
-              <span id="journal-save-status">🌿 Preserved in offline sanctuary</span>
+              <span id="journal-save-status">✓ Saved locally</span>
             </div>
             <div>
-              <button class="tool-btn" id="btn-export-chapter">📤 Export Text</button>
+              <button class="tool-btn" id="btn-export-chapter">📤 Export Entry</button>
             </div>
           </div>
         ` : `
           <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--ink-muted);">
-            Select or create a chapter to begin writing.
+            Select or create an entry to begin writing.
           </div>
         `}
       </div>
@@ -193,7 +193,7 @@ export class JournalManager {
         const state = store.getState();
         const newEntry = {
           id: 'j_' + Date.now(),
-          title: 'A New Morning Blossom',
+          title: 'New Journal Entry',
           content: '',
           themeId: state.activeTheme || 'sakura',
           mood: 4,
@@ -249,7 +249,7 @@ export class JournalManager {
     if (btnDelete) {
       btnDelete.addEventListener('click', () => {
         const active = this.getActiveEntry();
-        if (confirm(`Are you sure you want to let go of "${active.title}"?`)) {
+        if (confirm(`Are you sure you want to delete "${active.title}"?`)) {
           store.setState(s => {
             const filtered = s.journalEntries.filter(e => e.id !== active.id);
             return {
@@ -323,7 +323,7 @@ export class JournalManager {
 
     const statusEl = document.getElementById('journal-save-status');
     if (statusEl) {
-      statusEl.textContent = '🌿 Preserved in offline sanctuary';
+      statusEl.textContent = '✓ Saved locally';
     }
   }
 }

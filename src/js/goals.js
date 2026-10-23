@@ -1,6 +1,6 @@
 // ==========================================================================
-// Sakura Goals, Micro-habits & Quest Board Engine
-// Implements daily habits with streaks, weekly progress, quests, and petal celebration
+// Sakura Goals, Habits & Task Board Engine
+// Implements daily habits with streaks, weekly progress, tasks, and celebration
 // ==========================================================================
 
 import { store } from './state.js';
@@ -39,7 +39,7 @@ export class GoalsManager {
           <div class="stat-icon-circle">🌸</div>
           <div class="stat-info">
             <h3>${habitsCompleted} / ${habitsTotal}</h3>
-            <p>Today’s Micro-Habits (${habitsPercent}%)</p>
+            <p>Today’s Habits (${habitsPercent}%)</p>
           </div>
         </div>
 
@@ -47,7 +47,7 @@ export class GoalsManager {
           <div class="stat-icon-circle">🔥</div>
           <div class="stat-info">
             <h3>${Math.max(...state.dailyHabits.map(h => h.streak), 0)} Days</h3>
-            <p>Highest Active Streak (Grace Active)</p>
+            <p>Current Streak</p>
           </div>
         </div>
 
@@ -55,21 +55,21 @@ export class GoalsManager {
           <div class="stat-icon-circle">💧</div>
           <div class="stat-info">
             <h3>${state.waterGlasses} / ${state.waterTarget}</h3>
-            <p>Hydration Glasses Logged</p>
+            <p>Glasses of Water Logged</p>
           </div>
         </div>
       </div>
 
-      <!-- Main Columns: Habits, Milestones & Quests -->
+      <!-- Main Columns: Habits, Milestones & Tasks -->
       <div class="goals-content-grid">
-        <!-- Left: Daily Micro-Habits & Weekly Targets -->
+        <!-- Left: Daily Habits & Weekly Targets -->
         <div style="display: flex; flex-direction: column; gap: 24px;">
-          <!-- Daily Micro-Habits Panel -->
+          <!-- Daily Habits Panel -->
           <div class="goals-panel">
             <div class="goals-panel-header">
               <div>
-                <h3 class="goals-panel-title">🌿 Daily Horizon</h3>
-                <p class="goals-panel-sub">Gentle somatic micro-actions with non-punishing grace</p>
+                <h3 class="goals-panel-title">🌿 Daily Habits</h3>
+                <p class="goals-panel-sub">Simple daily habits to keep you on track</p>
               </div>
               <button class="btn-add-item" id="btn-add-habit">+ Add Habit</button>
             </div>
@@ -96,10 +96,10 @@ export class GoalsManager {
           <div class="goals-panel">
             <div class="goals-panel-header">
               <div>
-                <h3 class="goals-panel-title">🌙 Weekly Milestones</h3>
-                <p class="goals-panel-sub">Broader gentle intentions and steady rhythm</p>
+                <h3 class="goals-panel-title">🌙 Weekly Goals</h3>
+                <p class="goals-panel-sub">Track your targets for the week</p>
               </div>
-              <button class="btn-add-item" id="btn-add-milestone">+ Add Target</button>
+              <button class="btn-add-item" id="btn-add-milestone">+ Add Goal</button>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 14px;">
@@ -124,14 +124,14 @@ export class GoalsManager {
           </div>
         </div>
 
-        <!-- Right: Active Quests Board -->
+        <!-- Right: Active Tasks Board -->
         <div class="goals-panel">
           <div class="goals-panel-header">
             <div>
-              <h3 class="goals-panel-title">🗺️ Active Quests</h3>
-              <p class="goals-panel-sub">Sortable by priority & life domain</p>
+              <h3 class="goals-panel-title">📋 Tasks & Projects</h3>
+              <p class="goals-panel-sub">Organized by priority and category</p>
             </div>
-            <button class="btn-add-item" id="btn-add-quest">+ Add Quest</button>
+            <button class="btn-add-item" id="btn-add-quest">+ Add Task</button>
           </div>
 
           <!-- Filters -->
@@ -139,12 +139,12 @@ export class GoalsManager {
             <div class="quest-tabs-row">
               <button class="quest-tab-btn prio-filter ${this.questPriorityFilter === 'all' ? 'active' : ''}" data-prio="all">All Priorities</button>
               <button class="quest-tab-btn prio-filter ${this.questPriorityFilter === 'urgent' ? 'active' : ''}" data-prio="urgent">Immediate</button>
-              <button class="quest-tab-btn prio-filter ${this.questPriorityFilter === 'flow' ? 'active' : ''}" data-prio="flow">In Flow</button>
-              <button class="quest-tab-btn prio-filter ${this.questPriorityFilter === 'backlog' ? 'active' : ''}" data-prio="backlog">Gentle Horizon</button>
+              <button class="quest-tab-btn prio-filter ${this.questPriorityFilter === 'flow' ? 'active' : ''}" data-prio="flow">In Progress</button>
+              <button class="quest-tab-btn prio-filter ${this.questPriorityFilter === 'backlog' ? 'active' : ''}" data-prio="backlog">Later</button>
             </div>
 
             <div class="quest-tabs-row">
-              <button class="quest-tab-btn dom-filter ${this.questDomainFilter === 'all' ? 'active' : ''}" data-dom="all">All Domains</button>
+              <button class="quest-tab-btn dom-filter ${this.questDomainFilter === 'all' ? 'active' : ''}" data-dom="all">All Categories</button>
               <button class="quest-tab-btn dom-filter ${this.questDomainFilter === 'body' ? 'active' : ''}" data-dom="body">Body</button>
               <button class="quest-tab-btn dom-filter ${this.questDomainFilter === 'mind' ? 'active' : ''}" data-dom="mind">Mind</button>
               <button class="quest-tab-btn dom-filter ${this.questDomainFilter === 'spirit' ? 'active' : ''}" data-dom="spirit">Spirit</button>
@@ -258,7 +258,7 @@ export class GoalsManager {
     const btnAddHabit = document.getElementById('btn-add-habit');
     if (btnAddHabit) {
       btnAddHabit.addEventListener('click', () => {
-        const title = prompt('Enter your gentle daily micro-habit:');
+        const title = prompt('Enter your daily habit:');
         if (title && title.trim()) {
           store.setState(s => ({
             dailyHabits: [
@@ -275,7 +275,7 @@ export class GoalsManager {
     const btnAddMilestone = document.getElementById('btn-add-milestone');
     if (btnAddMilestone) {
       btnAddMilestone.addEventListener('click', () => {
-        const title = prompt('Enter weekly target title (e.g. 3 yoga sessions):');
+        const title = prompt('Enter weekly goal (e.g., 3 workout sessions):');
         if (title && title.trim()) {
           store.setState(s => ({
             weeklyMilestones: [
@@ -292,7 +292,7 @@ export class GoalsManager {
     const btnAddQuest = document.getElementById('btn-add-quest');
     if (btnAddQuest) {
       btnAddQuest.addEventListener('click', () => {
-        const title = prompt('Enter quest title:');
+        const title = prompt('Enter task title:');
         if (title && title.trim()) {
           store.setState(s => ({
             quests: [

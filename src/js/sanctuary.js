@@ -1,7 +1,6 @@
-// ==========================================================================
-// Aphrodite — Complete Personal Sanctuary Master Engine
-// Integrates 15 Dramatic Themes, Aphrodite Companion Chat, Planning Calendar,
-// Goals Dashboard, and Popup Reminder Nudges
+// Sakura — Daily Self-Care & Reflection Engine
+// Integrates 15 Themes, Journal, Planning Calendar,
+// Goals & Habits Dashboard, and Popup Reminders
 // ==========================================================================
 
 import { PetalsSystem } from './petals.js';
@@ -18,16 +17,15 @@ const supabase = (typeof window !== 'undefined' && window.supabase)
   : null;
 
 const NUDGE_MESSAGES = [
-  { id: 'water', icon: '💧', title: 'Hydration Sanctuary', text: 'Remember to drink water — a gentle cool sip restores your bloom.' },
-  { id: 'sleep', icon: '🌙', title: 'Early Rest', text: 'Go to bed early tonight. Give your temple the sacred, unhurried rest it deserves.' },
-  { id: 'junk', icon: '🍎', title: 'Mindful Nourishment', text: 'Don’t eat mindless junk food — feed your cells clean foods that gift you vibrant life.' },
-  { id: 'posture', icon: '🧘', title: 'Spine & Jaw', text: 'Unclench your jaw, roll your shoulders back, and let your spine lengthen.' }
+  { id: 'water', icon: '💧', title: 'Hydration Reminder', text: 'Remember to drink water — stay refreshed throughout the day.' },
+  { id: 'sleep', icon: '🌙', title: 'Early Rest', text: 'Go to bed early tonight. Give your body the restful sleep it deserves.' },
+  { id: 'junk', icon: '🍎', title: 'Healthy Eating', text: 'Choose nutritious foods that give you steady, vibrant energy.' },
+  { id: 'posture', icon: '🧘', title: 'Stretch & Posture', text: 'Roll your shoulders back, straighten your posture, and take a deep breath.' }
 ];
 
 const DEFAULT_STATE = {
   activeTheme: 'sakura',
   fluidWide: false,
-  chatSidebarCollapsed: false,
   journalArchiveHidden: false,
   journalFocusMode: false,
   calendarView: 'grid',
@@ -44,16 +42,6 @@ const DEFAULT_STATE = {
   },
   customReminders: [],
   waterCups: 0,
-  // Aphrodite chat welcoming greeting
-  chatMessages: [
-    {
-      id: 'msg_1',
-      sender: 'aphrodite',
-      text: 'Welcome, beloved. I am Aphrodite. You may speak to me openly of your physical deficiencies, fatigue, or where your body feels neglected today.\n\nTell me: how did you treat your temple, and what is your body asking for?',
-      action: null,
-      time: 'Just now'
-    }
-  ],
   journalChapters: [],
   activeChapterId: null,
   calendarEvents: [],
@@ -67,7 +55,6 @@ class MasterSanctuaryApp {
     this.petals = null;
     this.state = this.loadState();
     this.nudgeTimer = null;
-    this.activeDeficiency = 'Mindless eating / Bloated';
   }
 
   loadState() {
@@ -120,7 +107,6 @@ class MasterSanctuaryApp {
 
     // 4. Initialize All Sections
     this.initNavigation();
-    this.initAphroditeChat();
     this.initJournal();
     this.initCalendar();
     this.initGoals();
@@ -131,8 +117,7 @@ class MasterSanctuaryApp {
     // 5. Start Background Popup Reminders
     this.startPopupReminderLoop();
 
-    // 6. Connect Aphrodite Habit Ingestion & Supabase
-    window.addHabitFromAphrodite = (habitText) => this.addHabitFromAphrodite(habitText);
+    // 6. Habit Ingestion & Supabase
     this.loadHabitsFromSupabase();
   }
 
@@ -297,188 +282,10 @@ class MasterSanctuaryApp {
     }
 
     soundscape.playChime('chime');
-    this.toast(`Sanctuary transformed into ${themeId.toUpperCase()} palette! 🎨`, '✨');
+    this.toast(`Theme updated to ${themeId.toUpperCase()} palette! 🎨`, '✨');
   }
 
-  // =========================================================================
-  // APHRODITE WELLNESS & PHYSICAL DEFICIENCY CHATBOT (CONNECTED TO BACKEND)
-  // =========================================================================
-  initAphroditeChat() {
-    this.renderChatMessages();
 
-    const input = document.querySelector('#chat-input, #chat-message-input');
-    const sendBtn = document.getElementById('btn-send-chat');
-
-    // When the user clicks Send:
-    const handleSend = async () => {
-      const message = input ? input.value.trim() : '';
-      if (!message) return;
-      if (input) input.value = '';
-      await this.handleSendChatMessage(message);
-    };
-
-    if (sendBtn) sendBtn.onclick = handleSend;
-    if (input) {
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          handleSend();
-        }
-      });
-    }
-
-    // Flexible Chat Guidance Sidebar Toggle
-    const toggleSidebarBtn = document.getElementById('btn-toggle-chat-sidebar');
-    const chatContainer = document.getElementById('aphrodite-chat-container');
-    const updateChatSidebar = () => {
-      const isCollapsed = !!this.state.chatSidebarCollapsed;
-      if (chatContainer) chatContainer.classList.toggle('sidebar-collapsed', isCollapsed);
-      const icon = document.getElementById('chat-sidebar-toggle-icon');
-      const text = document.getElementById('chat-sidebar-toggle-text');
-      if (icon) icon.textContent = isCollapsed ? '📋' : '⇋';
-      if (text) text.textContent = isCollapsed ? 'Show Guidance' : 'Compact View';
-      if (toggleSidebarBtn) toggleSidebarBtn.classList.toggle('active', isCollapsed);
-    };
-
-    if (toggleSidebarBtn) {
-      toggleSidebarBtn.addEventListener('click', () => {
-        this.state.chatSidebarCollapsed = !this.state.chatSidebarCollapsed;
-        this.saveState();
-        updateChatSidebar();
-        this.toast(this.state.chatSidebarCollapsed ? 'Guidance collapsed for spacious chat dialog' : 'Guidance topics restored');
-      });
-    }
-    updateChatSidebar();
-
-    // Deficiency quick prompt buttons
-    const deficiencyChips = document.querySelectorAll('.deficiency-chip-btn');
-    deficiencyChips.forEach(btn => {
-      btn.addEventListener('click', async () => {
-        deficiencyChips.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const text = btn.dataset.prompt;
-        const tag = btn.textContent.trim().replace(/^[\p{Emoji}\s]+/u, '') || 'Physical Deficiency';
-        this.activeDeficiency = tag;
-        await this.handleSendChatMessage(text, this.activeDeficiency);
-      });
-    });
-
-    // Voice dictation mic
-    const micBtn = document.getElementById('btn-chat-mic');
-    if (micBtn) {
-      micBtn.addEventListener('click', () => {
-        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRec) {
-          this.toast('Speech recognition is not supported in this browser.', '🎙️');
-          return;
-        }
-        const rec = new SpeechRec();
-        rec.lang = 'en-US';
-        rec.onstart = () => {
-          micBtn.style.color = '#ef4444';
-          this.toast('Listening to your voice with warmth...', '🎙️');
-        };
-        rec.onresult = (e) => {
-          const transcript = e.results[0][0].transcript;
-          if (input) input.value = transcript;
-          this.handleSendChatMessage(transcript);
-        };
-        rec.onend = () => { micBtn.style.color = 'var(--muted-foreground)'; };
-        rec.start();
-      });
-    }
-  }
-
-  // 1. Show the message on the screen right away and persist state
-  addMessageToScreen(sender, text, action = null) {
-    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    this.state.chatMessages.push({
-      id: 'msg_' + Date.now() + Math.random().toString(36).substr(2, 4),
-      sender,
-      text,
-      action,
-      time: timeStr
-    });
-    this.saveState();
-    this.renderChatMessages();
-  }
-
-  // 2. Connect to backend server (which calls Gemini)
-  async handleSendChatMessage(message, deficiencyOverride = null) {
-    if (!message || !message.trim()) return;
-    const cleanMessage = message.trim();
-    const deficiency = deficiencyOverride || this.activeDeficiency || "Mindless eating / Bloated";
-
-    // 1. Show the user's message on the screen right away
-    this.addMessageToScreen("user", cleanMessage);
-    soundscape.playChime('chime');
-
-    // Display temporary holding space / thinking indicator
-    const tempThinkingId = 'thinking_' + Date.now();
-    this.state.chatMessages.push({
-      id: tempThinkingId,
-      sender: 'aphrodite',
-      text: 'Aphrodite is listening and holding space for your body...',
-      isThinking: true,
-      time: 'Now'
-    });
-    this.renderChatMessages();
-
-    // 2. Ask backend server (which asks Gemini)
-    try {
-      const response = await fetch("http://localhost:3000/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: cleanMessage,
-          physicalDeficiency: deficiency
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server returned HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // Remove thinking indicator
-      this.state.chatMessages = this.state.chatMessages.filter(m => m.id !== tempThinkingId);
-
-      if (data && data.reply) {
-        // Extract any suggested micro-habit / action
-        let action = null;
-        const match = data.reply.match(/(?:micro-habit|micro-step|One small step|gentle step|habit)[^:\n]*[:\-–]\s*([^\n\.]+)/i);
-        if (match) {
-          const cleanText = match[1].replace(/\*\*/g, '').replace(/^[“"']|[”"']$/g, '').trim();
-          action = { title: cleanText, category: 'body' };
-        } else {
-          // If bold action or specific step is emphasized in quotes
-          const boldMatch = data.reply.match(/\*\*([A-Z][^\*\n]{10,80})\*\*/);
-          if (boldMatch) {
-            action = { title: boldMatch[1].trim(), category: 'body' };
-          }
-        }
-
-        // 3. Display Aphrodite's real generated reply!
-        this.addMessageToScreen("aphrodite", data.reply, action);
-        soundscape.playChime('bell');
-        if (this.petals) this.petals.celebrate();
-      } else {
-        throw new Error("Empty reply returned");
-      }
-
-    } catch (error) {
-      console.error("Could not reach Aphrodite server:", error);
-
-      // Remove thinking indicator
-      this.state.chatMessages = this.state.chatMessages.filter(m => m.id !== tempThinkingId);
-
-      // Graceful local fallback so user experience is always protected
-      const fallback = this.generateAphroditeAdvice(cleanMessage);
-      this.addMessageToScreen("aphrodite", fallback.text, fallback.action);
-      soundscape.playChime('bell');
-    }
-  }
 
   // =========================================================================
   // SUPABASE HABIT SYNC & MICRO-HABITS INTEGRATION
@@ -563,118 +370,10 @@ class MasterSanctuaryApp {
     }
   }
 
-  // Alias for backward compatibility
-  sendChatMessage(text, deficiency) {
-    return this.handleSendChatMessage(text, deficiency);
-  }
 
-  renderChatMessages() {
-    const container = document.getElementById('chat-messages-container');
-    if (!container) return;
-
-    container.innerHTML = this.state.chatMessages.map(msg => {
-      const isAphrodite = msg.sender === 'aphrodite';
-
-      if (msg.isThinking) {
-        return `
-          <div class="chat-bubble-row aphrodite">
-            <img src="/assets/aphrodite_avatar.png" alt="Aphrodite" class="chat-bubble-avatar">
-            <div class="chat-bubble-card">
-              <span class="chat-bubble-thinking">
-                <span class="dot-pulse">🌸</span> Aphrodite is listening and holding space...
-              </span>
-            </div>
-          </div>
-        `;
-      }
-
-      const formattedHtml = this.formatMessageMarkdown(msg.text);
-
-      return `
-        <div class="chat-bubble-row ${isAphrodite ? 'aphrodite' : 'user'}">
-          ${isAphrodite ? `<img src="/assets/aphrodite_avatar.png" alt="Aphrodite" class="chat-bubble-avatar">` : ''}
-          <div class="chat-bubble-card">
-            <p>${formattedHtml}</p>
-            ${msg.action ? `
-              <div class="action-suggested-card">
-                <span>✨ <b>Aphrodite's advice:</b> ${this.escapeHtml(msg.action.title)}</span>
-                <button class="btn-quick-add-goal" data-action="${this.escapeHtml(msg.action.title)}" data-category="${msg.action.category || 'body'}">
-                  + Add to Daily Micro-Habits
-                </button>
-              </div>
-            ` : ''}
-            <div style="font-size: 10px; color: ${isAphrodite ? 'var(--muted-foreground)' : 'rgba(255,255,255,0.7)'}; margin-top: 6px; text-align: right;">
-              ${msg.time || 'Now'}
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    // Attach "+ Add to Daily Micro-Habits" buttons -> triggers addHabitFromAphrodite
-    container.querySelectorAll('.btn-quick-add-goal').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const actionTitle = btn.dataset.action;
-        btn.textContent = '⏳ Saving...';
-        btn.disabled = true;
-
-        await this.addHabitFromAphrodite(actionTitle);
-
-        btn.textContent = '✓ Added to Micro-Habits';
-        btn.style.background = '#10B981';
-      });
-    });
-
-    container.scrollTop = container.scrollHeight;
-  }
-
-  formatMessageMarkdown(text) {
-    if (!text) return '';
-    let safe = this.escapeHtml(text);
-    // bold **text**
-    safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    // italic *text*
-    safe = safe.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    // newlines to <br>
-    safe = safe.replace(/\n/g, '<br>');
-    return safe;
-  }
-
-  generateAphroditeAdvice(userText) {
-    const lower = userText.toLowerCase();
-    let text = '';
-    let action = null;
-
-    if (lower.includes('water') || lower.includes('dehydrat') || lower.includes('dry') || lower.includes('thirsty')) {
-      text = `I praise your honesty in naming this, sweet soul. When you forget water, your cells become like parched flower petals awaiting rain.\n\nDo not scold yourself for forgetting. Your body carried you through everything today regardless. Let us nourish your temple right this moment.\n\nOne small step: Drink two tall glasses of cool water slowly, feeling each drop restore your bloom.`;
-      action = { title: 'Drink 2 tall glasses of cool water', category: 'body' };
-    }
-    else if (lower.includes('junk') || lower.includes('sugar') || lower.includes('eating') || lower.includes('snack') || lower.includes('fast food')) {
-      text = `Notice how you chose to share this with me rather than hiding in shame. That awareness is sacred courage, darling.\n\nYour cravings were likely an attempt by your nervous system to soothe exhaustion or stress. Forgive yourself for the lapse; your temple is not ruined. Today we begin anew.\n\nOne small step: Pour a warm cup of herbal tea or enjoy a crisp apple, and let your digestion rest.`;
-      action = { title: 'Choose herbal tea or fruit instead of junk food', category: 'body' };
-    }
-    else if (lower.includes('neck') || lower.includes('posture') || lower.includes('back') || lower.includes('slouch') || lower.includes('stiff')) {
-      text = `You carry so much of the world’s weight in the curvature of your neck and shoulders, beloved. Look at how hard your spine has worked to hold you upright today.\n\nLet us honor your back with gentle release rather than frustration.\n\nOne small step: Unclench your jaw, roll your shoulders backward 5 times, and take three long sighs.`;
-      action = { title: '5 shoulder rolls & neck alignment stretches', category: 'body' };
-    }
-    else if (lower.includes('sleep') || lower.includes('late') || lower.includes('tired') || lower.includes('exhaust') || lower.includes('screen')) {
-      text = `Your weary eyes are asking for peace, sweet child. Staying up late is often revenge bedtime procrastination when the day gave you no quiet of your own.\n\nI praise you for how hard you worked today. But now the sun has set. You do not have to prove anything more tonight.\n\nOne small step: Dim your screens, place your phone across the room, and get into bed before 10:15 PM.`;
-      action = { title: 'Go to bed early before 10:15 PM', category: 'body' };
-    }
-    else if (lower.includes('tired') || lower.includes('behind') || lower.includes('lazy') || lower.includes('day') || lower.includes('did i do enough')) {
-      text = `Radiant one, listen closely: you are enough, exactly as you are right now. A body that survived today deserves reverence, not harsh judgment.\n\nYou do not have to conquer the whole kingdom tonight. Only breathe and be kind to the human in the mirror.\n\nOne small step: Place a gentle warm hand over your heart for ten quiet seconds and whisper: "I am doing my best."`;
-      action = { title: '10 seconds of resting hand on heart with kindness', category: 'spirit' };
-    }
-    else {
-      text = `I hear you so deeply, darling. Your body is a sacred temple that has carried every feeling, thought, and step you have ever taken.\n\nWhen we listen to our deficiencies with love rather than punishment, they transform into gentle guidance.\n\nOne small step: Drink a tall glass of cool water and take five slow, grounded breaths.`;
-      action = { title: 'Drink a glass of water and take 5 slow breaths', category: 'body' };
-    }
-
-    return { text, action };
-  }
 
   // =========================================================================
-  // SACRED JOURNAL WITH 15 DRAMATIC THEMES
+  // DAILY JOURNAL WITH 15 THEMES
   // =========================================================================
   initJournal() {
     this.renderJournal();
@@ -684,7 +383,7 @@ class MasterSanctuaryApp {
       newBtn.addEventListener('click', () => {
         const newChap = {
           id: 'chap_' + Date.now(),
-          title: 'A new chapter of tenderness',
+          title: 'New Journal Entry',
           themeId: this.state.activeTheme || 'sakura',
           mood: 5,
           date: 'Just now',
@@ -694,7 +393,7 @@ class MasterSanctuaryApp {
         this.state.activeChapterId = newChap.id;
         this.saveState();
         this.renderJournal();
-        this.toast('New chapter blossomed in your journal 🌸');
+        this.toast('New entry added to your journal 🌸');
       });
     }
 
@@ -940,7 +639,7 @@ class MasterSanctuaryApp {
       if (subtitle) {
         subtitle.textContent = mode === 'grid'
           ? 'Click on any day cell to schedule a daily habit or weekly goal'
-          : 'Upcoming schedule horizon — tap "+ Schedule" on any day to add a goal';
+          : 'Upcoming schedule — tap "+ Schedule" on any day to add a goal';
       }
       this.renderCalendar();
     };
@@ -1100,7 +799,7 @@ class MasterSanctuaryApp {
                   <div class="agenda-events-list" style="margin-top: 6px;">
                     ${events.length > 0
                       ? events.map(ev => `<span class="agenda-event-chip" data-ev-id="${ev.id}">${this.escapeHtml(ev.title)} <small class="del-agenda-ev" data-id="${ev.id}" style="cursor: pointer; opacity: 0.7; margin-left: 6px;" title="Delete event">✕</small></span>`).join('')
-                      : '<span class="agenda-empty-events">A quiet, open horizon.</span>'
+                      : '<span class="agenda-empty-events">No events scheduled.</span>'
                     }
                   </div>
                 </div>
@@ -1114,7 +813,7 @@ class MasterSanctuaryApp {
       }
 
       if (scheduledCount === 0) {
-        agendaHtml = `<div class="custom-reminders-empty">No events scheduled for ${monthName}. Tap "+ Schedule Goal" to begin your cadence.</div>`;
+        agendaHtml = `<div class="custom-reminders-empty">No events scheduled for ${monthName}. Tap "+ Schedule Goal" to add your first goal.</div>`;
       }
 
       agendaView.innerHTML = agendaHtml;
@@ -1164,7 +863,7 @@ class MasterSanctuaryApp {
     const addHabitBtn = document.getElementById('btn-add-daily-goal');
     if (addHabitBtn) {
       addHabitBtn.addEventListener('click', () => {
-        const text = prompt('Enter Daily Goal / Physical Care Habit:');
+        const text = prompt('Enter Daily Habit:');
         if (text && text.trim()) {
           this.state.dailyGoals.push({
             id: 'g_' + Date.now(),
@@ -1176,7 +875,7 @@ class MasterSanctuaryApp {
           this.saveState();
           this.renderGoals();
           soundscape.playChime('chime');
-          this.toast('New daily goal placed on your horizon! 🌿');
+          this.toast('New daily habit added! 🌿');
         }
       });
     }
@@ -1184,7 +883,7 @@ class MasterSanctuaryApp {
     const addWeeklyTargetBtn = document.getElementById('btn-add-weekly-target');
     if (addWeeklyTargetBtn) {
       addWeeklyTargetBtn.addEventListener('click', () => {
-        const text = prompt('Enter Weekly Target (e.g. 💧 Daily Hydration, 🌙 Early Dusk Rest):');
+        const text = prompt('Enter Weekly Target (e.g. 💧 Daily Hydration, 🌙 Early Rest):');
         if (text && text.trim()) {
           const days = prompt('Enter target days per week (1 - 7):', '5');
           const targetNum = Math.min(7, Math.max(1, parseInt(days) || 5));
@@ -1197,7 +896,7 @@ class MasterSanctuaryApp {
           this.saveState();
           this.renderGoals();
           soundscape.playChime('chime');
-          this.toast('Weekly target added to your sanctuary horizon! 🌸');
+          this.toast('Weekly target added! 🌸');
         }
       });
     }
@@ -1205,9 +904,9 @@ class MasterSanctuaryApp {
     const addQuestBtn = document.getElementById('btn-add-quest-item');
     if (addQuestBtn) {
       addQuestBtn.addEventListener('click', () => {
-        const text = prompt('Enter Quest to get done:');
+        const text = prompt('Enter task to complete:');
         if (text && text.trim()) {
-          const domain = prompt('Enter Focus Domain (body, mind, spirit, craft):', 'body') || 'body';
+          const domain = prompt('Enter Category (health, focus, mindset, work):', 'health') || 'health';
           this.state.quests.push({
             id: 'q_' + Date.now(),
             title: text.trim(),
@@ -1218,7 +917,7 @@ class MasterSanctuaryApp {
           this.saveState();
           this.renderGoals();
           soundscape.playChime('chime');
-          this.toast('Quest placed on your board! 🗺️');
+          this.toast('Task added to your list! 📋');
         }
       });
     }
@@ -1383,7 +1082,7 @@ class MasterSanctuaryApp {
       if (filteredQuests.length === 0) {
         questContainer.innerHTML = `
           <div style="padding: 16px; text-align: center; color: var(--muted-foreground); font-size: 12px; font-style: italic; border: 1px dashed var(--border); border-radius: 4px;">
-            No quests in this domain. Tap "+ Add Quest" to chart a gentle milestone. 🗺️
+            No tasks in this category. Tap "+ Add Task" to add a new task. 📋
           </div>
         `;
       } else {
@@ -1399,7 +1098,7 @@ class MasterSanctuaryApp {
               <span style="font-size: 10px; padding: 2px 7px; border-radius: 3px; background: var(--secondary); color: var(--primary); text-transform: uppercase;">
                 ${q.priority || 'flow'}
               </span>
-              <button class="del-quest-btn" data-qid="${q.id}" title="Delete quest" style="background: none; border: none; cursor: pointer; opacity: 0.6; font-size: 11px; padding: 2px 4px; color: var(--muted-foreground);">✕</button>
+              <button class="del-quest-btn" data-qid="${q.id}" title="Delete task" style="background: none; border: none; cursor: pointer; opacity: 0.6; font-size: 11px; padding: 2px 4px; color: var(--muted-foreground);">✕</button>
             </div>
           </div>
         `).join('');
@@ -1415,7 +1114,7 @@ class MasterSanctuaryApp {
               if (q.completed) {
                 soundscape.playChime('bell');
                 if (this.petals) this.petals.celebrate();
-                this.toast(`Quest completed: "${q.title}"! 🕊️`);
+                this.toast(`Task completed: "${q.title}"! ✓`);
               }
             }
           });
@@ -1430,7 +1129,7 @@ class MasterSanctuaryApp {
               const removed = this.state.quests.splice(idx, 1)[0];
               this.saveState();
               this.renderGoals();
-              this.toast(`Removed quest: "${removed.title}"`);
+              this.toast(`Removed task: "${removed.title}"`);
             }
           });
         });
@@ -1472,13 +1171,13 @@ class MasterSanctuaryApp {
         if ('Notification' in window) {
           Notification.requestPermission().then(perm => {
             if (perm === 'granted') {
-              this.toast('Browser system alerts enabled for your sanctuary! 🔔');
-              new Notification('Aphrodite Sanctuary 🌸', {
-                body: 'Remember to drink water and treat your temple gently.',
+              this.toast('Desktop notifications enabled! 🔔');
+              new Notification('Sakura Self-Care 🌸', {
+                body: 'Remember to drink water and take care of your body today.',
                 icon: '/assets/aphrodite_avatar.png'
               });
             } else {
-              this.toast('In-app popup toasts will hold space instead. 🕊️');
+              this.toast('In-app reminder notifications enabled instead. 🔔');
             }
           });
         }
@@ -1620,7 +1319,7 @@ class MasterSanctuaryApp {
         if (item) {
           soundscape.playChime('bell');
           if (this.petals) this.petals.celebrate();
-          const noteText = item.note || (item.time ? `Scheduled for ${item.time}` : 'Gentle self-care moment for your temple.');
+          const noteText = item.note || (item.time ? `Scheduled for ${item.time}` : 'Daily self-care reminder.');
           this.toast(`<b>${item.title}:</b> ${noteText}`, item.icon || '🌸');
 
           if ('Notification' in window && Notification.permission === 'granted') {
@@ -1675,7 +1374,7 @@ class MasterSanctuaryApp {
         id: cr.id,
         icon: cr.icon || '🌸',
         title: cr.title,
-        text: cr.note ? `${cr.note}${cr.time ? ` (${cr.time})` : ''}` : (cr.time ? `Scheduled for ${cr.time}` : 'Gentle self-care moment for your temple.')
+        text: cr.note ? `${cr.note}${cr.time ? ` (${cr.time})` : ''}` : (cr.time ? `Scheduled for ${cr.time}` : 'Daily self-care reminder.')
       }));
 
     const pool = [...activeSystemNudges, ...activeCustomNudges];
@@ -1686,7 +1385,7 @@ class MasterSanctuaryApp {
     this.toast(`<b>${chosen.title}:</b> ${chosen.text}`, chosen.icon);
 
     if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(`Aphrodite: ${chosen.title}`, {
+      new Notification(`Reminder: ${chosen.title}`, {
         body: chosen.text,
         icon: '/assets/aphrodite_avatar.png'
       });
@@ -1694,7 +1393,7 @@ class MasterSanctuaryApp {
   }
 
   // =========================================================================
-  // SOMATIC BREATH & SOUND SANCTUARY
+  // BREATHING, WATER & SOUND
   // =========================================================================
   initBreathingAndSound() {
     // 4-7-8 Breath Pacer
@@ -1709,20 +1408,20 @@ class MasterSanctuaryApp {
         if (!isBreathing) return;
         circle.className = 'breath-circle inhale';
         if (label) label.textContent = 'Inhale (4s)';
-        if (sub) sub.textContent = 'Drinking in oxygen & calm...';
+        if (sub) sub.textContent = 'Breathe in slowly and deeply...';
         soundscape.playChime('chime');
 
         timerId = setTimeout(() => {
           if (!isBreathing) return;
           circle.className = 'breath-circle hold';
           if (label) label.textContent = 'Hold (7s)';
-          if (sub) sub.textContent = 'Resting in the sacred pause...';
+          if (sub) sub.textContent = 'Hold your breath gently...';
 
           timerId = setTimeout(() => {
             if (!isBreathing) return;
             circle.className = 'breath-circle exhale';
             if (label) label.textContent = 'Exhale (8s)';
-            if (sub) sub.textContent = 'Releasing all bodily tension...';
+            if (sub) sub.textContent = 'Exhale slowly and release all tension...';
             soundscape.playChime('bell');
 
             timerId = setTimeout(() => {
@@ -1736,7 +1435,7 @@ class MasterSanctuaryApp {
         isBreathing = !isBreathing;
         if (isBreathing) {
           runCycle();
-          this.toast('4-7-8 somatic rhythm began. Soften your shoulders.', '🪷');
+          this.toast('4-7-8 breathing exercise started. Relax your shoulders.', '🪷');
         } else {
           clearTimeout(timerId);
           circle.className = 'breath-circle';
@@ -1761,7 +1460,7 @@ class MasterSanctuaryApp {
           else if (sound === 'breeze') soundscape.playBreeze();
           else if (sound === 'rain') soundscape.playRain();
           else if (sound === 'ocean') soundscape.playOcean();
-          this.toast(`Resonating: ${sound.toUpperCase()} 🎧`);
+          this.toast(`Now playing: ${sound.toUpperCase()} 🎧`);
         }
       });
     });
@@ -1783,7 +1482,7 @@ class MasterSanctuaryApp {
           soundscape.playChime('chime');
           if (i === 8 && this.petals) {
             this.petals.celebrate();
-            this.toast('Radiant! 8 cups of water completed today! 💧', '🌸');
+            this.toast('Great job! 8 cups of water completed today! 💧', '🌸');
           }
         });
         container.appendChild(btn);
