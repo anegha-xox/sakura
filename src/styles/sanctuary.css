@@ -505,87 +505,10 @@ a { color: inherit; text-decoration: none; }
   padding: clamp(24px, 4vw, 42px) 0 clamp(48px, 6vw, 80px);
 }
 
-/* Breath Sanctuary Grid */
-.breath-sanctuary-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-}
-
 .reminder-wisdom-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-/* Breath Display & Breathing Lotus Circle */
-.breath-display-box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 16px 0;
-}
-
-.breath-circle {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  border: 2px dashed var(--primary);
-  background: var(--secondary);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 0 25px var(--accent-glow);
-  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
-  user-select: none;
-}
-
-.breath-circle:hover {
-  transform: scale(1.05);
-  border-style: solid;
-}
-
-.breath-circle.inhale {
-  animation: breathInhale 4s ease-in-out forwards;
-}
-
-.breath-circle.hold {
-  animation: breathHold 7s ease-in-out forwards;
-}
-
-.breath-circle.exhale {
-  animation: breathExhale 8s ease-in-out forwards;
-}
-
-@keyframes breathInhale {
-  0% { transform: scale(1); border-color: var(--primary); }
-  100% { transform: scale(1.2); border-color: #10B981; box-shadow: 0 0 35px rgba(16, 185, 129, 0.4); }
-}
-
-@keyframes breathHold {
-  0% { transform: scale(1.2); border-color: #10B981; }
-  100% { transform: scale(1.2); border-color: #6366F1; box-shadow: 0 0 40px rgba(99, 102, 241, 0.45); }
-}
-
-@keyframes breathExhale {
-  0% { transform: scale(1.2); border-color: #6366F1; }
-  100% { transform: scale(1); border-color: var(--primary); box-shadow: 0 0 20px var(--accent-glow); }
-}
-
-.breath-label {
-  font-family: var(--font-display);
-  font-size: 22px;
-  color: var(--foreground);
-  font-weight: 500;
-}
-
-.breath-sub {
-  font-size: 11px;
-  color: var(--muted-foreground);
-  margin-top: 4px;
 }
 
 /* Hydration Cups Counter */
@@ -823,7 +746,7 @@ a { color: inherit; text-decoration: none; }
 
 /* Inspiration Grid */
 .sanctuary-grid {
-  grid-template-columns: 1.05fr 1fr .95fr;
+  grid-template-columns: 1.15fr 1fr;
   gap: 24px;
   display: grid;
 }
@@ -859,23 +782,6 @@ a { color: inherit; text-decoration: none; }
 .inspiration-content h3 { margin: 8px 0; font-size: 28px; }
 .inspiration-content p { opacity: 0.9; font-size: 11px; }
 
-.save-image {
-  z-index: 2;
-  color: var(--foreground);
-  background: var(--card-bg);
-  border-radius: 50%;
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-.save-image:hover { color: var(--primary); transform: scale(1.08); }
-
 .quote-panel {
   border: 1px solid var(--border);
   background: var(--muted);
@@ -890,7 +796,7 @@ a { color: inherit; text-decoration: none; }
 }
 .quote-panel blockquote {
   font-family: var(--font-display);
-  max-width: 280px;
+  max-width: 320px;
   margin: 14px 0 18px;
   font-size: 26px;
   line-height: 1.25;
@@ -903,56 +809,6 @@ a { color: inherit; text-decoration: none; }
   font-size: 8px;
 }
 
-.mood-panel {
-  border: 1px solid var(--border);
-  background: var(--card-bg);
-  border-radius: 4px;
-  height: 310px;
-  padding: 26px;
-}
-.mood-panel h3 { margin: 14px 0 6px; font-size: 26px; }
-.mood-panel p { color: var(--muted-foreground); font-size: 11px; line-height: 1.6; }
-.mood-options {
-  justify-content: space-between;
-  gap: 4px;
-  margin-top: 22px;
-  display: flex;
-}
-.mood-option {
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  display: flex;
-}
-.mood-option button {
-  background: var(--muted);
-  border: 1px solid transparent;
-  border-radius: 50%;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--muted-foreground);
-  transition: all 0.2s;
-}
-.mood-option button[aria-pressed="true"] {
-  border-color: var(--primary);
-  background: var(--secondary);
-  color: var(--primary);
-  transform: scale(1.08);
-}
-.mood-response {
-  border-top: 1px solid var(--border);
-  color: var(--primary);
-  align-items: center;
-  gap: 8px;
-  margin-top: 20px;
-  padding-top: 14px;
-  font-size: 11px;
-  display: flex;
-}
-
 
 
 /* --- SECTION 3: DAILY JOURNAL WITH 15 THEMES --- */
@@ -960,6 +816,8 @@ a { color: inherit; text-decoration: none; }
   display: grid;
   grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
   gap: clamp(16px, 2.5vw, 28px);
+  min-height: 540px;
+  align-items: stretch;
   transition: all 0.3s ease;
 }
 
@@ -973,12 +831,13 @@ a { color: inherit; text-decoration: none; }
 .journal-chapters-sidebar {
   border: 1px solid var(--border);
   background: var(--card-bg);
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  max-height: 600px;
+  min-height: 500px;
+  max-height: calc(100vh - 200px);
 }
 .chapters-scroll-list {
   flex: 1;
@@ -986,15 +845,17 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-right: 4px;
 }
 .chapter-item-btn {
   padding: 10px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--muted);
   text-align: left;
   cursor: pointer;
   transition: all 0.2s;
+  position: relative;
 }
 .chapter-item-btn:hover, .chapter-item-btn.active {
   background: var(--secondary);
@@ -1002,15 +863,35 @@ a { color: inherit; text-decoration: none; }
 }
 .chapter-item-btn h4 { font-family: var(--font-display); font-size: 16px; color: var(--foreground); }
 .chapter-item-btn p { font-size: 10.5px; color: var(--muted-foreground); margin-top: 2px; }
+.chapter-del-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  line-height: 1;
+}
+.chapter-item-btn:hover .chapter-del-btn {
+  opacity: 0.8;
+}
+.chapter-del-btn:hover {
+  opacity: 1;
+  color: #ef4444;
+  background: var(--card-bg);
+}
 
 .journal-active-editor {
   border: 1px solid var(--border);
   background: var(--card-bg);
-  border-radius: 4px;
-  padding: clamp(18px, 3vw, 28px);
+  border-radius: 6px;
+  padding: clamp(20px, 3.5vw, 36px);
   display: flex;
   flex-direction: column;
   gap: 18px;
+  min-height: 540px;
+  box-shadow: var(--shadow-soft);
   transition: all 0.3s ease;
 }
 
@@ -1096,24 +977,200 @@ body.journal-focus-active .journal-body-textarea {
 
 .journal-body-textarea {
   width: 100%;
-  min-height: 240px;
+  flex: 1;
+  min-height: 320px;
   border: none;
   background: transparent;
   outline: none;
   font-family: var(--font-display);
-  font-size: 18px;
-  line-height: 1.8;
+  font-size: 20px;
+  line-height: 1.85;
   color: var(--foreground);
   resize: vertical;
+  box-sizing: border-box;
+}
+
+/* --- Journal To-Do List Space --- */
+.journal-todo-box {
+  margin-top: 10px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.journal-todo-box:focus-within {
+  border-color: var(--primary);
+}
+
+.journal-todo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.journal-todo-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--foreground);
+}
+
+.journal-todo-hint {
+  font-size: 11.5px;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+.journal-todo-form {
+  display: flex;
+  gap: 8px;
+}
+
+.journal-todo-input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--foreground);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.journal-todo-input:focus {
+  border-color: var(--primary);
+}
+
+.journal-todo-add-btn {
+  padding: 8px 14px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.journal-todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.journal-todo-empty {
+  padding: 14px 10px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  background: var(--card-bg);
+}
+
+.journal-todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.journal-todo-item:hover {
+  border-color: var(--primary);
+  transform: translateX(2px);
+}
+
+.journal-todo-item.completed {
+  opacity: 0.7;
+  background: var(--secondary);
+}
+
+.journal-todo-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.journal-todo-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 3px;
+  border: 1.5px solid var(--primary);
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.journal-todo-checkbox:checked {
+  background: var(--primary);
+}
+
+.journal-todo-checkbox:checked::before {
+  content: "✓";
+  font-size: 12px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.journal-todo-text {
+  font-size: 13px;
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  transition: all 0.2s;
+}
+
+.journal-todo-item.completed .journal-todo-text {
+  text-decoration: line-through;
+  color: var(--muted-foreground);
+}
+
+.journal-todo-del-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--muted-foreground);
+  padding: 3px 6px;
+  border-radius: 3px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.journal-todo-del-btn:hover {
+  color: #ef4444;
+  background: var(--muted);
 }
 
 /* --- SECTION 4: PLANNING CALENDAR & EVENT SCHEDULER --- */
 .calendar-wrapper-card {
   border: 1px solid var(--border);
   background: var(--card-bg);
-  border-radius: 4px;
+  border-radius: 6px;
   padding: clamp(16px, 3vw, 28px);
   box-shadow: var(--shadow-soft);
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 .calendar-view-toggle {
   display: inline-flex;
@@ -1159,7 +1216,7 @@ body.journal-focus-active .journal-body-textarea {
 }
 .calendar-grid-table {
   width: 100%;
-  min-width: 560px;
+  table-layout: fixed;
   border-collapse: collapse;
 }
 .calendar-grid-table th {
@@ -1173,13 +1230,15 @@ body.journal-focus-active .journal-body-textarea {
   border-bottom: 1px solid var(--border);
 }
 .calendar-grid-table td {
-  height: 80px;
+  height: auto;
+  min-height: 90px;
   vertical-align: top;
-  padding: 8px;
+  padding: 8px 6px;
   border: 1px solid var(--border);
   font-size: 12px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
+  position: relative;
 }
 .calendar-grid-table td:hover {
   background: var(--muted);
@@ -1193,16 +1252,58 @@ body.journal-focus-active .journal-body-textarea {
   margin-bottom: 4px;
 }
 .calendar-event-tag {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
   font-size: 9.5px;
-  padding: 2px 6px;
-  border-radius: 2px;
+  padding: 3px 6px;
+  border-radius: 3px;
   background: var(--primary);
   color: var(--primary-foreground);
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-top: 3px;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.3;
+}
+.calendar-event-tag small.del-grid-ev {
+  cursor: pointer;
+  opacity: 0.75;
+  font-size: 10px;
+  line-height: 1;
+}
+.calendar-event-tag small.del-grid-ev:hover {
+  opacity: 1;
+  color: #fecaca;
+}
+
+/* Flexible Calendar Event Dialog */
+.custom-modal {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--foreground);
+  padding: 0;
+  max-width: 480px;
+  width: 90vw;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  margin: auto;
+}
+.custom-modal::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+.custom-modal-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
 }
 
 /* Agenda Horizons List View */
@@ -1369,33 +1470,7 @@ body.journal-focus-active .journal-body-textarea {
   transition: width 0.4s ease;
 }
 
-/* --- SECTION 6: POPUP NOTIFICATIONS & REMINDERS (Gentle Nudges) --- */
-.reminders-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-}
-.reminder-card {
-  border: 1px solid var(--border);
-  background: var(--card-bg);
-  border-radius: 4px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.reminder-item-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--muted);
-}
-.reminder-info h4 { font-size: 14px; font-weight: 600; }
-.reminder-info p { font-size: 11.5px; color: var(--muted-foreground); font-style: italic; }
-
+/* --- SECTION 6: CUSTOM REMINDERS (Gentle Nudges) --- */
 .toggle-switch-ios {
   position: relative;
   display: inline-block;
@@ -1788,8 +1863,6 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
 
   .journal-section-grid { grid-template-columns: 1fr; }
   .goals-dashboard-grid { grid-template-columns: 1fr; }
-  .reminders-grid { grid-template-columns: 1fr; }
-  .breath-sanctuary-grid { grid-template-columns: 1fr; }
   .themes-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); }
   .hero {
     height: auto !important;
@@ -1932,7 +2005,7 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  .inspiration, .quote-panel, .mood-panel {
+  .inspiration, .quote-panel {
     height: auto;
     min-height: 250px;
   }
@@ -1942,20 +2015,6 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
   .quote-panel blockquote {
     font-size: 20px;
   }
-  .mood-panel {
-    padding: 20px 18px;
-  }
-  .mood-options {
-    gap: 2px;
-    justify-content: space-between;
-  }
-  .mood-option button {
-    width: 38px;
-    height: 38px;
-    font-size: 16px;
-  }
-
-
 
   /* Daily Journal */
   .journal-section-grid {
@@ -1963,7 +2022,7 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
     gap: 16px;
   }
   .journal-chapters-sidebar {
-    max-height: 220px;
+    max-height: 240px;
     padding: 14px 12px;
   }
   .journal-active-editor {
@@ -1997,7 +2056,7 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
   }
   .journal-body-textarea {
     font-size: 16px !important;
-    min-height: 180px;
+    min-height: 240px;
     line-height: 1.6;
   }
 
@@ -2019,13 +2078,14 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
     font-size: 9.5px;
   }
   .calendar-grid-table td {
-    height: 48px;
+    height: auto;
+    min-height: 54px;
     padding: 3px 2px;
     font-size: 10px;
   }
   .calendar-event-tag {
     font-size: 8px;
-    padding: 1px 3px;
+    padding: 2px 4px;
     margin-top: 1px;
   }
 
@@ -2046,19 +2106,7 @@ input:checked + .toggle-slider-round::before { transform: translateX(20px); }
     gap: 8px;
   }
 
-  /* Reminders */
-  .reminders-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .reminder-card {
-    padding: 18px 14px;
-    gap: 14px;
-  }
-  .reminder-item-row {
-    padding: 10px 12px;
-    gap: 10px;
-  }
+  /* Custom Reminders */
   .manual-reminders-grid {
     grid-template-columns: 1fr;
     gap: 16px;
